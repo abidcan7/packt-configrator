@@ -330,8 +330,8 @@
         .urun-secenegi:active { transform: scale(0.98); }
         .urun-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
         .urun-ikon {
-            width: 32px; height: 32px; object-fit: contain; flex-shrink: 0;
-            border-radius: 6px; background: rgba(51,49,50,0.05); padding: 3px;
+            width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;
+            border-radius: 8px; background: rgba(51,49,50,0.06); padding: 4px;
         }
         .urun-badge {
             font-size: 10px; background: rgba(51,49,50,0.08); color: rgba(51,49,50,0.45);
@@ -477,7 +477,7 @@
             #selectors .selector-label-group { margin-left: 0 !important; }
 
             #right-panel { grid-template-columns: 1fr; }
-            #plan-canvas { height: 130px; }
+            #plan-canvas { height: 160px; }
 
             /* Larger tap targets for SVG hotspots in viewBox space */
             .hotspot { r: 62; touch-action: manipulation; }
@@ -507,6 +507,23 @@
             /* Onboarding — mobile */
             #onboarding    { top: 3%; left: 3%; max-width: 60%; }
 
+        }
+
+        /* ── KONFİGÜRASYON BİLGİ ETİKETİ ── */
+        #config-info {
+            position: absolute; top: 4%; left: 4%;
+            display: flex; flex-direction: column; gap: 3px;
+            pointer-events: none; z-index: 188;
+        }
+        #config-info-plato {
+            font-size: clamp(10px, 1.1vw, 15px); font-weight: 700;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            color: #333132; opacity: 0.75;
+        }
+        #config-info-ayak {
+            font-size: clamp(8px, 0.8vw, 11px); font-weight: 500;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: #333132; opacity: 0.45;
         }
 
         /* ── ALINTI OVERLAY ── */
@@ -722,6 +739,12 @@
                 <circle class="hotspot" cx="1707" cy="319" r="38" data-id="RM"  data-row="M" data-col="99" data-z="25" data-yonler="sag" onclick="nodeaTikla(this)"/>
             </g>
         </svg>
+
+        <!-- KONFİGÜRASYON BİLGİ ETİKETİ — her zaman görünür -->
+        <div id="config-info">
+            <span id="config-info-plato">Plato 01 · 55 cm</span>
+            <span id="config-info-ayak">Ayak Dışta</span>
+        </div>
 
         <!-- ALINTI OVERLAY — onboarding kapandıktan sonra kalıcı olarak görünür -->
         <div id="quote-overlay">
@@ -1189,6 +1212,9 @@ function baseSecimiYap(baseId, btn) {
     btn.classList.add('aktif');
     const bilgi = document.getElementById('plato-bilgi');
     if (bilgi) bilgi.textContent = PLATO_BILGI[baseId] || '';
+    const platoNo = { b01:'01', b02:'02', b03:'03' }[baseId] || '';
+    const ci = document.getElementById('config-info-plato');
+    if (ci) ci.textContent = `Plato ${platoNo} · ${(PLATO_BILGI[baseId]||'').split(' · ')[0]}`;
     // Node grupları
     ['b01','b02','b03'].forEach(id => {
         document.getElementById('nodes-' + id).style.display = id === baseId ? '' : 'none';
@@ -1212,6 +1238,8 @@ function ayakSecimiYap(pozisyon, btn) {
     ayakPozisyonu = pozisyon;
     document.querySelectorAll('.ayak-dis, .ayak-ic').forEach(b => b.classList.remove('aktif'));
     btn.classList.add('aktif');
+    const ca = document.getElementById('config-info-ayak');
+    if (ca) ca.textContent = pozisyon === 'dis' ? 'Ayak Dışta' : 'Ayak İçte';
     // Aksesuarları sıfırla
     sifirla();
     baseSVGyukle();
@@ -1720,10 +1748,13 @@ function planCiz() {
     const labelH  = 14;
 
     // Slot genişliği: LM + mc×col + RM → toplam (mc+2) slot
-    const slotW = (W - 2 * pad) / (mc + 2);
-    const cell  = slotW;   // kare hücreler
-    const offX  = pad + slotW;        // B/F ızgarası buradan başlar
-    const offY  = pad + labelH;       // üst etiketten sonra
+    const slotW  = (W - 2 * pad) / (mc + 2);
+    // cellH: B ve F satırları canvas yüksekliğine sığacak şekilde kısıtlanır
+    // Toplam dikey alan: labelH + pad + cellH + 2.4*cellH + cellH + pad = 2*pad + labelH + 4.4*cellH
+    const cellH  = Math.min(slotW, (H - 2 * pad - labelH) / 4.4);
+    const cell   = cellH;             // genişlik hesaplamalarında cellH kullanılır
+    const offX   = pad + slotW;       // B/F ızgarası buradan başlar
+    const offY   = pad + labelH;      // üst etiketten sonra
 
     // LM / RM merkez X
     const lmCx  = pad + slotW * 0.5;
@@ -1741,30 +1772,30 @@ function planCiz() {
     [['B', 0], ['F', 2.4]].forEach(([row, ri]) => {
         for (let col = 1; col <= mc; col++) {
             const id = row + col;
-            const px = offX + (col - 1) * cell;
-            const py = offY + ri * cell;
+            const px = offX + (col - 1) * slotW;   // yatayda slotW kullan
+            const py = offY + ri * cellH;            // dikeyde cellH kullan
             const isAyak = ayaklar.has(id);
             const isDolu = doluMap[id];
 
             ctx.beginPath();
-            ctx.roundRect(px + 1.5, py + 1.5, cell - 3, cell - 3, 3);
+            ctx.roundRect(px + 1.5, py + 1.5, slotW - 3, cellH - 3, 3);
             ctx.fillStyle   = isAyak ? ayakRenk + '14' : isDolu ? isDolu + '30' : '#1c1c1c';
             ctx.strokeStyle = isAyak ? ayakRenk + '50' : isDolu ? isDolu + '90' : '#2c2c2c';
-            ctx.lineWidth   = isAyak ? 1 : 1;
+            ctx.lineWidth   = 1;
             ctx.fill(); ctx.stroke();
 
             if (isDolu && !isAyak) {
                 ctx.beginPath();
-                ctx.arc(px + cell/2, py + cell/2, cell * 0.2, 0, Math.PI * 2);
+                ctx.arc(px + slotW/2, py + cellH/2, Math.min(slotW,cellH) * 0.2, 0, Math.PI * 2);
                 ctx.fillStyle = isDolu;
                 ctx.fill();
             }
 
             const lbl = isAyak ? 'A' : id;
             ctx.fillStyle = isAyak ? ayakRenk + 'aa' : isDolu ? '#ffffff66' : '#4a4a48';
-            ctx.font = `${isAyak ? 'bold ' : ''}${Math.max(6, Math.floor(cell * 0.28))}px Inter,sans-serif`;
+            ctx.font = `${isAyak ? 'bold ' : ''}${Math.max(6, Math.floor(Math.min(slotW,cellH) * 0.28))}px Inter,sans-serif`;
             ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(lbl, px + cell/2, py + cell/2);
+            ctx.fillText(lbl, px + slotW/2, py + cellH/2);
         }
     });
 
