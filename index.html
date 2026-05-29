@@ -1896,40 +1896,24 @@ async function shareDesign() {
     btn.innerHTML = '<span style="font-size:11px">Hazırlanıyor…</span>';
 
     try {
-        const captureEl = document.getElementById('configurator-wrapper');
+        // Görünen viewport'un tam ekran görüntüsü — karmaşık render yok
+        const sx = Math.round(window.scrollX);
+        const sy = Math.round(window.scrollY);
+        const sw = window.innerWidth;
+        const sh = window.innerHeight;
 
-        // Tüm img'lerin yüklendiğini bekle
-        const imgs = [...captureEl.querySelectorAll('img')];
-        await Promise.all(imgs.map(img =>
-            img.complete ? Promise.resolve()
-                         : new Promise(r => { img.onload = r; img.onerror = r; })
-        ));
-
-        // mix-blend-mode html2canvas'ta boş render'a yol açar — geçici kaldır
-        const blendEls = captureEl.querySelectorAll('#surface-layer, #base-layer, .aksesuar-layer');
-        blendEls.forEach(el => { el.style.mixBlendMode = 'normal'; el.style.opacity = '1'; });
-
-        // Capture sırasında sahnedeki UI katmanlarını gizle
-        const hideEls = captureEl.querySelectorAll('#toast, #onboarding, #node-layer, #guide-layer');
-        hideEls.forEach(el => el.style.visibility = 'hidden');
-
-        // scale: cihazın piksel yoğunluğuna göre ayarla — görünen büyüklüğü koru
-        const captureScale = Math.min(window.devicePixelRatio || 1, 2);
-
-        const canvas = await html2canvas(captureEl, {
-            backgroundColor: '#f0ebe3',
-            scale: captureScale,
+        const canvas = await html2canvas(document.body, {
+            backgroundColor: '#0c0b0a',
+            scale: 1,
             useCORS: true,
             allowTaint: true,
             logging: false,
-            width:  captureEl.offsetWidth,
-            height: captureEl.offsetHeight,
-            ignoreElements: el => el.id === 'guide-layer' || el.id === 'node-layer',
+            x: sx, y: sy,
+            width: sw, height: sh,
+            windowWidth:  document.documentElement.scrollWidth,
+            windowHeight: document.documentElement.scrollHeight,
+            ignoreElements: el => el.id === 'guide-layer',
         });
-
-        // Blend mode ve visibility'yi geri yükle
-        blendEls.forEach(el => { el.style.mixBlendMode = ''; el.style.opacity = ''; });
-        hideEls.forEach(el => { el.style.visibility = ''; });
 
         const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
         const file = new File([blob], 'packt-design.png', { type: 'image/png' });
