@@ -514,7 +514,10 @@
             position: absolute; top: 4%; left: 4%;
             display: flex; flex-direction: column; gap: 3px;
             pointer-events: none; z-index: 188;
+            opacity: 0;
+            transition: opacity 1.4s var(--ease-out-expo);
         }
+        #config-info.gorunu { opacity: 1; }
         #config-info-plato {
             font-size: clamp(10px, 1.1vw, 15px); font-weight: 700;
             letter-spacing: 0.06em; text-transform: uppercase;
@@ -1344,8 +1347,10 @@ function onboardingKapat() {
         el.remove();
         // Onboarding gittikten sonra alıntı yavaşça belirir
         setTimeout(() => {
-            const q = document.getElementById('quote-overlay');
-            if (q) q.classList.add('gorunu');
+            const q  = document.getElementById('quote-overlay');
+            const ci = document.getElementById('config-info');
+            if (q)  q.classList.add('gorunu');
+            if (ci) ci.classList.add('gorunu');
         }, 120);
     }, { once: true });
 }
