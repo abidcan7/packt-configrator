@@ -1,0 +1,258 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer1" xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" version="1.1" viewBox="0 0 1920 1080">
+  <!-- Generator: Adobe Illustrator 30.4.0, SVG Export Plug-In . SVG Version: 2.1.4 Build 226)  -->
+  <defs>
+    <style>
+      .st0 {
+        stroke: #333132;
+        stroke-width: 2px;
+      }
+
+      .st0, .st1 {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    </style>
+  </defs>
+  <g id="LINE">
+    <line class="st0" x1="692.5" y1="806.33" x2="690.37" y2="804.48"/>
+  </g>
+  <g id="LINE1" data-name="LINE">
+    <line class="st0" x1="676.76" y1="827.24" x2="692.14" y2="822.8"/>
+  </g>
+  <g id="LINE2" data-name="LINE">
+    <line class="st0" x1="738.64" y1="793.01" x2="736.51" y2="791.17"/>
+  </g>
+  <g id="LINE3" data-name="LINE">
+    <line class="st0" x1="722.9" y1="813.93" x2="738.28" y2="809.49"/>
+  </g>
+  <g id="LINE4" data-name="LINE">
+    <line class="st0" x1="664.15" y1="678.16" x2="602.63" y2="695.91"/>
+  </g>
+  <g id="LINE5" data-name="LINE">
+    <line class="st0" x1="588.11" y1="728.07" x2="589.95" y2="731.51"/>
+  </g>
+  <g id="LINE6" data-name="LINE">
+    <line class="st0" x1="620.41" y1="714.11" x2="620.06" y2="713.46"/>
+  </g>
+  <g id="ARC">
+    <path class="st0" d="M706.68,769.66c-.22-1.95-1.98-3.35-3.93-3.13-.17.02-.33.05-.49.09"/>
+  </g>
+  <g id="LINE7" data-name="LINE">
+    <line class="st0" x1="702.26" y1="766.63" x2="678.88" y2="773.38"/>
+  </g>
+  <g id="ARC1" data-name="ARC">
+    <path class="st0" d="M678.88,773.38c-2.14.74-3.4,2.95-2.96,5.17"/>
+  </g>
+  <g id="LINE8" data-name="LINE">
+    <line class="st0" x1="675.92" y1="778.54" x2="680.8" y2="805.97"/>
+  </g>
+  <g id="LINE9" data-name="LINE">
+    <line class="st0" x1="666.86" y1="818.51" x2="653.2" y2="741.71"/>
+  </g>
+  <g id="LINE10" data-name="LINE">
+    <line class="st0" x1="714.72" y1="723.95" x2="726.94" y2="792.65"/>
+  </g>
+  <g id="LINE11" data-name="LINE">
+    <line class="st0" x1="713" y1="805.19" x2="706.68" y2="769.66"/>
+  </g>
+  <g id="LINE12" data-name="LINE">
+    <line class="st0" x1="664.85" y1="818.04" x2="651.2" y2="741.24"/>
+  </g>
+  <g id="ARC2" data-name="ARC">
+    <path class="st0" d="M679.58,806.32c-2.11.65-3.58,2.55-3.69,4.76"/>
+  </g>
+  <g id="ARC3" data-name="ARC">
+    <path class="st0" d="M681.71,808.17c-2.11.65-3.58,2.55-3.69,4.76"/>
+  </g>
+  <g id="ARC4" data-name="ARC">
+    <path class="st0" d="M693.4,808.49c.06-1.49-1.11-2.75-2.6-2.81-.37-.01-.74.05-1.09.18"/>
+  </g>
+  <g id="LINE13" data-name="LINE">
+    <line class="st0" x1="693.4" y1="819.81" x2="693.4" y2="808.49"/>
+  </g>
+  <g id="LINE14" data-name="LINE">
+    <line class="st0" x1="678.02" y1="812.93" x2="678.02" y2="824.25"/>
+  </g>
+  <g id="LINE15" data-name="LINE">
+    <line class="st0" x1="689.71" y1="805.86" x2="681.71" y2="808.17"/>
+  </g>
+  <g id="LINE16" data-name="LINE">
+    <line class="st0" x1="687.58" y1="804.02" x2="679.58" y2="806.32"/>
+  </g>
+  <g id="LINE17" data-name="LINE">
+    <line class="st0" x1="675.89" y1="811.08" x2="675.89" y2="822.4"/>
+  </g>
+  <g id="ARC5" data-name="ARC">
+    <path class="st0" d="M690.37,804.48c-.79-.63-1.84-.81-2.79-.47"/>
+  </g>
+  <g id="LWPOLYLINE">
+    <polyline class="st0" points="676.15 827.25 676.55 827.28 676.91 827.19 677.23 826.97 677.51 826.62 677.73 826.17 677.89 825.61 677.99 824.97 678.02 824.25"/>
+  </g>
+  <g id="LWPOLYLINE1" data-name="LWPOLYLINE">
+    <polyline class="st0" points="693.4 819.81 693.37 820.53 693.27 821.17 693.11 821.73 692.89 822.18 692.61 822.53 692.29 822.75 692.14 822.8"/>
+  </g>
+  <g id="LWPOLYLINE2" data-name="LWPOLYLINE">
+    <polyline class="st0" points="675.42 823.15 675.52 823.16 675.61 823.14 675.69 823.08 675.76 822.99 675.82 822.88 675.86 822.74 675.88 822.58 675.89 822.4"/>
+  </g>
+  <g id="ARC6" data-name="ARC">
+    <path class="st0" d="M653.2,741.71c-.29-2.08-1.22-4.02-2.67-5.55"/>
+  </g>
+  <g id="ARC7" data-name="ARC">
+    <path class="st0" d="M651.2,741.24c-.07-.52-.31-1.01-.67-1.39"/>
+  </g>
+  <g id="ARC8" data-name="ARC">
+    <path class="st0" d="M714.72,723.95c-.29-2.08-1.22-4.02-2.67-5.55"/>
+  </g>
+  <g id="LINE18" data-name="LINE">
+    <line class="st0" x1="676.15" y1="827.25" x2="669.41" y2="825.66"/>
+  </g>
+  <g id="LINE19" data-name="LINE">
+    <line class="st0" x1="675.42" y1="823.15" x2="668.68" y2="821.56"/>
+  </g>
+  <g id="LINE20" data-name="LINE">
+    <line class="st0" x1="666.51" y1="678.96" x2="712.05" y2="718.4"/>
+  </g>
+  <g id="LINE21" data-name="LINE">
+    <line class="st0" x1="650.53" y1="736.16" x2="604.99" y2="696.72"/>
+  </g>
+  <g id="LINE22" data-name="LINE">
+    <line class="st0" x1="650.53" y1="739.85" x2="604.99" y2="700.41"/>
+  </g>
+  <g id="LINE23" data-name="LINE">
+    <line class="st0" x1="724.16" y1="799.61" x2="724.16" y2="810.93"/>
+  </g>
+  <g id="ARC9" data-name="ARC">
+    <path class="st0" d="M727.85,794.85c-2.11.65-3.58,2.55-3.69,4.76"/>
+  </g>
+  <g id="LINE24" data-name="LINE">
+    <line class="st0" x1="735.85" y1="792.54" x2="727.85" y2="794.85"/>
+  </g>
+  <g id="ARC10" data-name="ARC">
+    <path class="st0" d="M739.54,795.17c.06-1.49-1.11-2.75-2.6-2.81-.37-.01-.74.05-1.09.18"/>
+  </g>
+  <g id="LINE25" data-name="LINE">
+    <line class="st0" x1="739.54" y1="806.49" x2="739.54" y2="795.17"/>
+  </g>
+  <g id="ARC11" data-name="ARC">
+    <path class="st0" d="M725.72,793c-2.11.65-3.58,2.55-3.69,4.76"/>
+  </g>
+  <g id="LWPOLYLINE3" data-name="LWPOLYLINE">
+    <polyline class="st0" points="664.85 818.04 665.15 819.39 665.57 820.72 666.09 821.97 666.69 823.1 667.35 824.07 668.04 824.84 668.73 825.38 669.41 825.66"/>
+  </g>
+  <g id="ARC12" data-name="ARC">
+    <path class="st0" d="M666.86,818.51c.08,1.25.76,2.38,1.82,3.05"/>
+  </g>
+  <g id="LINE26" data-name="LINE">
+    <line class="st0" x1="733.72" y1="790.7" x2="725.72" y2="793"/>
+  </g>
+  <g id="LINE27" data-name="LINE">
+    <line class="st0" x1="722.03" y1="797.76" x2="722.03" y2="809.08"/>
+  </g>
+  <g id="ARC13" data-name="ARC">
+    <path class="st0" d="M736.51,791.17c-.79-.63-1.84-.81-2.79-.47"/>
+  </g>
+  <g id="LWPOLYLINE4" data-name="LWPOLYLINE">
+    <polyline class="st0" points="722.29 813.93 722.69 813.96 723.05 813.87 723.37 813.65 723.65 813.3 723.87 812.85 724.03 812.29 724.13 811.65 724.16 810.93"/>
+  </g>
+  <g id="LWPOLYLINE5" data-name="LWPOLYLINE">
+    <polyline class="st0" points="739.54 806.49 739.51 807.21 739.41 807.85 739.25 808.41 739.03 808.86 738.75 809.21 738.43 809.43 738.28 809.49"/>
+  </g>
+  <g id="LWPOLYLINE6" data-name="LWPOLYLINE">
+    <polyline class="st0" points="721.56 809.83 721.66 809.84 721.75 809.82 721.83 809.76 721.9 809.67 721.96 809.56 722 809.42 722.02 809.26 722.03 809.08"/>
+  </g>
+  <g id="LINE28" data-name="LINE">
+    <line class="st0" x1="710.99" y1="804.72" x2="704.68" y2="769.19"/>
+  </g>
+  <g id="LINE29" data-name="LINE">
+    <line class="st0" x1="722.29" y1="813.93" x2="715.55" y2="812.34"/>
+  </g>
+  <g id="LINE30" data-name="LINE">
+    <line class="st0" x1="721.56" y1="809.83" x2="714.82" y2="808.24"/>
+  </g>
+  <g id="ARC14" data-name="ARC">
+    <path class="st0" d="M704.68,769.19c-.17-1.11-.8-2.09-1.75-2.69"/>
+  </g>
+  <g id="LWPOLYLINE7" data-name="LWPOLYLINE">
+    <polyline class="st0" points="710.99 804.72 711.3 806.07 711.71 807.4 712.23 808.65 712.83 809.78 713.49 810.75 714.18 811.52 714.87 812.06 715.55 812.34"/>
+  </g>
+  <g id="ARC15" data-name="ARC">
+    <path class="st0" d="M713,805.19c.08,1.25.76,2.38,1.82,3.05"/>
+  </g>
+  <g id="LWPOLYLINE8" data-name="LWPOLYLINE">
+    <polyline class="st0" points="604.99 696.72 604.44 696.3 603.89 696.02 603.36 695.87 602.86 695.87 602.4 696 601.98 696.27 601.61 696.68 601.3 697.22"/>
+  </g>
+  <g id="ARC16" data-name="ARC">
+    <path class="st0" d="M666.51,678.96c-.6-.65-1.49-.95-2.36-.81"/>
+  </g>
+  <g id="LWPOLYLINE9" data-name="LWPOLYLINE">
+    <polyline class="st0" points="604.99 700.41 604.72 700.2 604.44 700.06 604.18 699.99 603.93 699.99 603.7 700.05 603.49 700.19 603.3 700.39 603.15 700.66"/>
+  </g>
+  <g id="LINE31" data-name="LINE">
+    <line class="st0" x1="590.17" y1="728.35" x2="603.15" y2="700.66"/>
+  </g>
+  <g id="LINE32" data-name="LINE">
+    <line class="st0" x1="588.33" y1="724.91" x2="601.3" y2="697.22"/>
+  </g>
+  <g id="LWPOLYLINE10" data-name="LWPOLYLINE">
+    <polyline class="st0" points="590.17 728.35 589.71 729.76 589.75 730.98 590.27 731.97 591.26 732.67 592.69 733.08 594.48 733.16 596.59 732.93 598.92 732.38"/>
+  </g>
+  <g id="LINE33" data-name="LINE">
+    <line class="st0" x1="631.16" y1="723.08" x2="598.92" y2="732.38"/>
+  </g>
+  <g id="LINE34" data-name="LINE">
+    <line class="st0" x1="611.33" y1="705.9" x2="607.09" y2="714.95"/>
+  </g>
+  <g id="LWPOLYLINE11" data-name="LWPOLYLINE">
+    <polyline class="st0" points="609.72 716.16 609.02 716.32 608.39 716.39 607.85 716.37 607.42 716.24 607.12 716.03 606.97 715.74 606.96 715.37 607.09 714.95"/>
+  </g>
+  <g id="LINE35" data-name="LINE">
+    <line class="st0" x1="617.72" y1="713.85" x2="609.72" y2="716.16"/>
+  </g>
+  <g id="LWPOLYLINE12" data-name="LWPOLYLINE">
+    <polyline class="st0" points="620.34 715.06 620.48 714.63 620.47 714.27 620.31 713.97 620.01 713.76 619.59 713.64 619.05 713.61 618.42 713.68 617.72 713.85"/>
+  </g>
+  <g id="LINE36" data-name="LINE">
+    <line class="st0" x1="620.34" y1="715.06" x2="618.57" y2="718.85"/>
+  </g>
+  <g id="LWPOLYLINE13" data-name="LWPOLYLINE">
+    <polyline class="st0" points="620.32 719.65 619.85 719.76 619.43 719.81 619.07 719.79 618.78 719.71 618.59 719.57 618.48 719.37 618.47 719.13 618.57 718.85"/>
+  </g>
+  <g id="LINE37" data-name="LINE">
+    <line class="st0" x1="620.32" y1="719.65" x2="621.55" y2="719.3"/>
+  </g>
+  <g id="ARC17" data-name="ARC">
+    <path class="st0" d="M621.55,719.3c1.18-.32,2.23-1,3.01-1.95"/>
+  </g>
+  <g id="LINE38" data-name="LINE">
+    <line class="st0" x1="608.18" y1="712.62" x2="615.87" y2="710.4"/>
+  </g>
+  <g id="ARC18" data-name="ARC">
+    <path class="st0" d="M588.33,724.91c-.59.95-.67,2.13-.22,3.16"/>
+  </g>
+  <g id="LINE39" data-name="LINE">
+    <line class="st0" x1="615.87" y1="710.4" x2="616.38" y2="710.28"/>
+  </g>
+  <g id="ARC19" data-name="ARC">
+    <path class="st0" d="M620.02,715.75c.6-.21,1.16-.51,1.68-.88"/>
+  </g>
+  <g id="LINE40" data-name="LINE">
+    <line class="st0" x1="675.7" y1="823.07" x2="675.42" y2="823.15"/>
+  </g>
+  <g id="LINE41" data-name="LINE">
+    <line class="st0" x1="721.84" y1="809.75" x2="721.56" y2="809.83"/>
+  </g>
+  <g id="LWPOLYLINE14" data-name="LWPOLYLINE">
+    <polyline class="st1" points="649.91 695.49 648.88 694.87 647.49 694.47 645.92 694.33 644.34 694.47 642.95 694.87 641.92 695.49 641.37 696.24 641.37 697.04 641.92 697.8"/>
+  </g>
+  <g id="LINE42" data-name="LINE">
+    <line class="st1" x1="641.92" y1="697.8" x2="656.12" y2="710.1"/>
+  </g>
+  <g id="LWPOLYLINE15" data-name="LWPOLYLINE">
+    <polyline class="st1" points="664.12 707.79 664.67 708.55 664.67 709.35 664.12 710.1 663.09 710.72 661.7 711.12 660.12 711.26 658.54 711.12 657.15 710.72 656.12 710.1"/>
+  </g>
+  <g id="LINE43" data-name="LINE">
+    <line class="st1" x1="664.12" y1="707.79" x2="649.91" y2="695.49"/>
+  </g>
+</svg>
