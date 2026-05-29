@@ -1545,7 +1545,7 @@ async function parcaEkle(urun) {
     const dosyaId  = urun.dosyaId
         || urun.urunId.replace(/-sol-kose$/, '').replace(/-sag-kose$/, '');
     const basePrefix = urun.dosyaBase || seciliBase;
-    const dosyaAdi   = `${basePrefix}.${dosyaId}.${nodesStr}.${urun.yon}.svg`;
+    const dosyaAdi   = `${basePrefix}/${basePrefix}.${dosyaId}.${nodesStr}.${urun.yon}.svg`;
 
     const img = document.createElement('img');
     img.className    = 'layer aksesuar-layer enter';
