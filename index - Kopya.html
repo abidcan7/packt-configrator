@@ -1653,10 +1653,9 @@ async function parcaEkle(urun) {
             let svgText = await r.text();
             // Replace fill="none" with shelf bg so only the product shape gets filled
             svgText = svgText.replace(/fill="none"/g, 'fill="#f0ebe5"');
-            
-            // iOS Blob desteklemediği için Base64 formatına çeviriyoruz:
-            const base64 = btoa(unescape(encodeURIComponent(svgText)));
-            img.src = 'data:image/svg+xml;base64,' + base64;
+            const blob = new Blob([svgText], { type: 'image/svg+xml' });
+            blobUrl = URL.createObjectURL(blob);
+            img.src = blobUrl;
         } catch {
             img.src = dosyaAdi;
         }
