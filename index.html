@@ -1209,7 +1209,7 @@ function nodeMusaitMi(id) {
 // ════════════════════════════════════════════════════════════
 const PLATO_BILGI = { b01: '55 cm · 12 nokta', b02: '85 cm · 18 nokta', b03: '125 cm · 26 nokta' };
 
-function baseSecimiYap(baseId, btn) {
+function _baseUygula(baseId, btn) {
     seciliBase = baseId;
     document.querySelectorAll('.sel-btn:not(.ayak-dis):not(.ayak-ic)').forEach(b => b.classList.remove('aktif'));
     btn.classList.add('aktif');
@@ -1218,37 +1218,50 @@ function baseSecimiYap(baseId, btn) {
     const platoNo = { b01:'01', b02:'02', b03:'03' }[baseId] || '';
     const ci = document.getElementById('config-info-plato');
     if (ci) ci.textContent = `Plato ${platoNo} · ${(PLATO_BILGI[baseId]||'').split(' · ')[0]}`;
-    // Node grupları
     ['b01','b02','b03'].forEach(id => {
         document.getElementById('nodes-' + id).style.display = id === baseId ? '' : 'none';
     });
-    // Node kılavuzu (src JS'de atanır, HTML'de boş)
     const num = baseId.slice(-1);
     document.getElementById('guide-layer').src = `BASE0${num}-NODE.svg`;
-    // Aksesuarları sıfırla, ayakları yeniden uygula
-    sifirla();
-    surfaceSVGyukle();
-    baseSVGyukle();
-    ayakNodelariniUygula();
-    ozetGuncelle();
-    planCiz();
+    sifirla(); surfaceSVGyukle(); baseSVGyukle(); ayakNodelariniUygula(); ozetGuncelle(); planCiz();
+}
+
+function baseSecimiYap(baseId, btn) {
+    if (takiliParcalar.length > 0) {
+        onayGoster(
+            `${takiliParcalar.length} aksesuar silinecek`,
+            'Model değiştirince mevcut aksesuarlar kaldırılır. Devam etmek istiyor musun?',
+            () => _baseUygula(baseId, btn),
+            'Devam Et'
+        );
+        return;
+    }
+    _baseUygula(baseId, btn);
 }
 
 // ════════════════════════════════════════════════════════════
 // AYAK SEÇİMİ
 // ════════════════════════════════════════════════════════════
-function ayakSecimiYap(pozisyon, btn) {
+function _ayakUygula(pozisyon, btn) {
     ayakPozisyonu = pozisyon;
     document.querySelectorAll('.ayak-dis, .ayak-ic').forEach(b => b.classList.remove('aktif'));
     btn.classList.add('aktif');
     const ca = document.getElementById('config-info-ayak');
     if (ca) ca.textContent = pozisyon === 'dis' ? 'Ayak Dışta' : 'Ayak İçte';
-    // Aksesuarları sıfırla
-    sifirla();
-    baseSVGyukle();
-    ayakNodelariniUygula();
-    ozetGuncelle();
-    planCiz();
+    sifirla(); baseSVGyukle(); ayakNodelariniUygula(); ozetGuncelle(); planCiz();
+}
+
+function ayakSecimiYap(pozisyon, btn) {
+    if (takiliParcalar.length > 0) {
+        onayGoster(
+            `${takiliParcalar.length} aksesuar silinecek`,
+            'Ayak pozisyonu değiştirince mevcut aksesuarlar kaldırılır. Devam etmek istiyor musun?',
+            () => _ayakUygula(pozisyon, btn),
+            'Devam Et'
+        );
+        return;
+    }
+    _ayakUygula(pozisyon, btn);
 }
 
 // Masa yüzeyi (BASE-01.svg) — daima görünür, ayak pozisyonundan bağımsız
@@ -1316,20 +1329,34 @@ function haptic(ms = 8) {
 }
 
 // ════════════════════════════════════════════════════════════
-// KALDIR MODALİ
+// KALDIR / ONAY MODALİ (genel amaçlı)
 // ════════════════════════════════════════════════════════════
-let _kaldirHedef = null;
-function kaldirModal(parca) {
-    _kaldirHedef = parca;
-    document.getElementById('kaldir-urun-adi').textContent = URUN_KATALOGU[parca.urunId].ad;
+let _kaldirHedef   = null;
+let _onayCallback  = null;
+
+function onayGoster(baslik, aciklama, onOnayla, onayBtn = 'Onayla') {
+    _onayCallback = onOnayla;
+    document.getElementById('kaldir-urun-adi').textContent  = baslik;
+    document.getElementById('kaldir-aciklama').textContent  = aciklama;
+    document.getElementById('kaldir-onayla').textContent    = onayBtn;
     document.getElementById('kaldir-modal').classList.add('acik');
 }
+function kaldirModal(parca) {
+    _kaldirHedef = parca;
+    onayGoster(
+        URUN_KATALOGU[parca.urunId].ad,
+        'Bu aksesuarı kaldırmak istiyor musunuz?',
+        () => { parcaKaldir(parca); _kaldirHedef = null; },
+        'Kaldır'
+    );
+}
 function kaldirIptal() {
-    _kaldirHedef = null;
+    _kaldirHedef = null; _onayCallback = null;
     document.getElementById('kaldir-modal').classList.remove('acik');
 }
 function kaldirOnayla() {
-    if (_kaldirHedef) { parcaKaldir(_kaldirHedef); _kaldirHedef = null; }
+    if (_onayCallback) _onayCallback();
+    _onayCallback = null; _kaldirHedef = null;
     document.getElementById('kaldir-modal').classList.remove('acik');
 }
 
@@ -1662,10 +1689,12 @@ function parcaKaldir(kayit) {
 
 function hepsiniTemizle() {
     if (!takiliParcalar.length) return;
-    sifirla();
-    ayakNodelariniUygula();
-    ozetGuncelle();
-    planCiz();
+    onayGoster(
+        `${takiliParcalar.length} aksesuar kaldırılacak`,
+        'Tüm aksesuarlar silinecek. Emin misin?',
+        () => { sifirla(); ayakNodelariniUygula(); ozetGuncelle(); planCiz(); },
+        'Tümünü Kaldır'
+    );
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1845,14 +1874,35 @@ async function shareDesign() {
     btn.innerHTML = '<span style="font-size:11px">Hazırlanıyor…</span>';
 
     try {
-        const captureEl = document.getElementById('main-layout');
+        const captureEl = document.getElementById('configurator-wrapper');
+
+        // Tüm img'lerin yüklendiğini bekle
+        const imgs = [...captureEl.querySelectorAll('img')];
+        await Promise.all(imgs.map(img =>
+            img.complete ? Promise.resolve()
+                         : new Promise(r => { img.onload = r; img.onerror = r; })
+        ));
+
+        // mix-blend-mode html2canvas'ta boş render'a yol açar — geçici kaldır
+        const blendEls = captureEl.querySelectorAll('#surface-layer, #base-layer, .aksesuar-layer');
+        blendEls.forEach(el => { el.style.mixBlendMode = 'normal'; el.style.opacity = '1'; });
+
+        // Capture sırasında sahnedeki UI katmanlarını gizle
+        const hideEls = captureEl.querySelectorAll('#toast, #onboarding, #node-layer, #guide-layer');
+        hideEls.forEach(el => el.style.visibility = 'hidden');
+
         const canvas = await html2canvas(captureEl, {
-            backgroundColor: '#0a0a0a',
+            backgroundColor: '#f0ebe3',
             scale: 2,
             useCORS: true,
+            allowTaint: true,
             logging: false,
             ignoreElements: el => el.id === 'guide-layer' || el.id === 'node-layer',
         });
+
+        // Blend mode ve visibility'yi geri yükle
+        blendEls.forEach(el => { el.style.mixBlendMode = ''; el.style.opacity = ''; });
+        hideEls.forEach(el => { el.style.visibility = ''; });
 
         const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
         const file = new File([blob], 'packt-design.png', { type: 'image/png' });
