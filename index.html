@@ -1887,85 +1887,44 @@ function planCiz() {
 }
 
 // ════════════════════════════════════════════════════════════
-// TASARIM PAYLAŞ / İNDİR  (html2canvas + Web Share API)
+// TASARIM PAYLAŞ / İNDİR (Tüm Cihazlar İçin Ortak Görsel Paylaşımı)
 // ════════════════════════════════════════════════════════════
-const _isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-// iOS Safari tespiti: mix-blend-mode on img çalışmıyor, CSS fallback için .ios class'ı ekle
-const _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-               (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-if (_isIOS) document.documentElement.classList.add('ios');
-
 async function shareDesign() {
+    if (typeof html2canvas === 'undefined') {
+        toastGoster('Ekran aracı henüz yüklenmedi, tekrar dene', '⚠️', 3000);
+        return;
+    }
+
     const btn = document.getElementById('share-btn');
     btn.classList.add('yukleniyor');
     btn.innerHTML = '<span style="font-size:11px">Hazırlanıyor…</span>';
 
     try {
-        // 1. iOS (iPhone/iPad) İÇİN STRATEJİ: Metin ve Liste Paylaşımı
-        if (_isIOS && navigator.share) {
-            // Ekranda gözüken anlık masa ve ayak bilgilerini al
-            const platoMetni = document.getElementById('config-info-plato').innerText;
-            const ayakMetni  = document.getElementById('config-info-ayak').innerText;
-            
-            // Aksesuarları gruplayarak say
-            let parcaMetni = 'Henüz aksesuar eklenmedi.';
-            if (takiliParcalar.length > 0) {
-                const gruplar = {};
-                takiliParcalar.forEach(p => {
-                    const ad = URUN_KATALOGU[p.urunId].ad;
-                    gruplar[ad] = (gruplar[ad] || 0) + 1;
-                });
-                parcaMetni = Object.entries(gruplar)
-                    .map(([ad, adet]) => `• ${adet} adet ${ad}`)
-                    .join('\n');
-            }
-
-            // Şık bir paylaşım metni oluştur
-            const paylasimMetni = `İşte benim Packt masa tasarımım!\n\n📐 Model: ${platoMetni}\n🦵 Ayak: ${ayakMetni}\n\n📦 Aksesuarlar:\n${parcaMetni}\n\nSen de kendi masanı thepackt.co adresinden tasarla.`;
-
-            await navigator.share({
-                title: 'Packt Masa Tasarımım',
-                text: paylasimMetni,
-                url: window.location.href // Veya direkt 'https://thepackt.co' yazabilirsin
-            });
-            
-            toastGoster('Tasarım detayları paylaşıldı', '📤', 2500);
-            return; // iOS ise burada bitir, html2canvas'ı hiç yorma
-        }
-
-
-        // 2. ANDROID VE MASAÜSTÜ İÇİN STRATEJİ: Yüksek Çözünürlüklü Görsel
-        if (typeof html2canvas === 'undefined') {
-            toastGoster('Ekran aracı henüz yüklenmedi, tekrar dene', '⚠️', 3000);
-            return;
-        }
-
-        // Sadece görünür pencereyi değil, konfigüratörün ve listenin olduğu "Ana Kutu"yu hedefliyoruz
-        const captureEl = document.getElementById('main-layout');
+        // Tüm UI'ı (Masa ve Liste) kapsayan ana kutuyu hedefliyoruz
+        const captureEl = document.getElementById('main-layout') || document.body;
 
         const canvas = await html2canvas(captureEl, {
-            backgroundColor: '#0c0b0a', 
-            scale: window.devicePixelRatio || 2, // Android'deki bulanıklığı (blur) çözen sihir
+            backgroundColor: '#0c0b0a',
+            scale: window.devicePixelRatio || 2, // Tüm cihazlarda jilet gibi netlik
             useCORS: true,
             allowTaint: true,
             logging: false,
-            // Ekrandaki menü veya bilgilendirme toast'larını resme dahil etme
+            // Bildirimleri ve menüleri ekran görüntüsünden gizle
             ignoreElements: el => el.id === 'guide-layer' || el.id === 'toast' || el.id === 'selection-menu'
         });
 
         const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
         const file = new File([blob], 'packt-tasarimim.png', { type: 'image/png' });
 
-        // Android: Native paylaşım ekranını aç (WhatsApp, Instagram vs.)
+        // iOS ve Android için Native Paylaşım Ekranı (Görsel ile birlikte)
         if (_isMobile && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({
                 title: 'Packt Masa Tasarımım',
-                text: 'Packt Configurator ile oluşturduğum masa tasarımı → thepackt.co',
+                text: 'Packt Configurator ile kendi çalışma alanımı tasarladım!',
                 files: [file],
             });
         } else {
-            // Masaüstü: Görseli bilgisayara indir
+            // Masaüstü için direkt indirme
             const url = URL.createObjectURL(blob);
             const a   = document.createElement('a');
             a.href    = url;
@@ -1991,7 +1950,6 @@ async function shareDesign() {
         </svg>Paylaş`;
     }
 }
-
 // ════════════════════════════════════════════════════════════
 // BAŞLANGIÇ
 // ════════════════════════════════════════════════════════════
