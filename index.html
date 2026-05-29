@@ -1887,56 +1887,86 @@ const _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
 if (_isIOS) document.documentElement.classList.add('ios');
 
 async function shareDesign() {
-    if (typeof html2canvas === 'undefined') {
-        toastGoster('Ekran aracı henüz yüklenmedi, tekrar dene', '⚠️', 3000);
-        return;
-    }
-
     const btn = document.getElementById('share-btn');
     btn.classList.add('yukleniyor');
     btn.innerHTML = '<span style="font-size:11px">Hazırlanıyor…</span>';
 
     try {
-        // Görünen viewport'un tam ekran görüntüsü — karmaşık render yok
-        const sx = Math.round(window.scrollX);
-        const sy = Math.round(window.scrollY);
-        const sw = window.innerWidth;
-        const sh = window.innerHeight;
+        // 1. iOS (iPhone/iPad) İÇİN STRATEJİ: Metin ve Liste Paylaşımı
+        if (_isIOS && navigator.share) {
+            // Ekranda gözüken anlık masa ve ayak bilgilerini al
+            const platoMetni = document.getElementById('config-info-plato').innerText;
+            const ayakMetni  = document.getElementById('config-info-ayak').innerText;
+            
+            // Aksesuarları gruplayarak say
+            let parcaMetni = 'Henüz aksesuar eklenmedi.';
+            if (takiliParcalar.length > 0) {
+                const gruplar = {};
+                takiliParcalar.forEach(p => {
+                    const ad = URUN_KATALOGU[p.urunId].ad;
+                    gruplar[ad] = (gruplar[ad] || 0) + 1;
+                });
+                parcaMetni = Object.entries(gruplar)
+                    .map(([ad, adet]) => `• ${adet} adet ${ad}`)
+                    .join('\n');
+            }
 
-        const canvas = await html2canvas(document.body, {
-            backgroundColor: '#0c0b0a',
-            scale: 1,
+            // Şık bir paylaşım metni oluştur
+            const paylasimMetni = `İşte benim Packt masa tasarımım!\n\n📐 Model: ${platoMetni}\n🦵 Ayak: ${ayakMetni}\n\n📦 Aksesuarlar:\n${parcaMetni}\n\nSen de kendi masanı thepackt.co adresinden tasarla.`;
+
+            await navigator.share({
+                title: 'Packt Masa Tasarımım',
+                text: paylasimMetni,
+                url: window.location.href // Veya direkt 'https://thepackt.co' yazabilirsin
+            });
+            
+            toastGoster('Tasarım detayları paylaşıldı', '📤', 2500);
+            return; // iOS ise burada bitir, html2canvas'ı hiç yorma
+        }
+
+
+        // 2. ANDROID VE MASAÜSTÜ İÇİN STRATEJİ: Yüksek Çözünürlüklü Görsel
+        if (typeof html2canvas === 'undefined') {
+            toastGoster('Ekran aracı henüz yüklenmedi, tekrar dene', '⚠️', 3000);
+            return;
+        }
+
+        // Sadece görünür pencereyi değil, konfigüratörün ve listenin olduğu "Ana Kutu"yu hedefliyoruz
+        const captureEl = document.getElementById('main-layout');
+
+        const canvas = await html2canvas(captureEl, {
+            backgroundColor: '#0c0b0a', 
+            scale: window.devicePixelRatio || 2, // Android'deki bulanıklığı (blur) çözen sihir
             useCORS: true,
             allowTaint: true,
             logging: false,
-            x: sx, y: sy,
-            width: sw, height: sh,
-            windowWidth:  document.documentElement.scrollWidth,
-            windowHeight: document.documentElement.scrollHeight,
-            ignoreElements: el => el.id === 'guide-layer',
+            // Ekrandaki menü veya bilgilendirme toast'larını resme dahil etme
+            ignoreElements: el => el.id === 'guide-layer' || el.id === 'toast' || el.id === 'selection-menu'
         });
 
         const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
-        const file = new File([blob], 'packt-design.png', { type: 'image/png' });
+        const file = new File([blob], 'packt-tasarimim.png', { type: 'image/png' });
 
-        // Mobil: Web Share API — masaüstü: her zaman direkt indir
-        if (_isMobile && navigator.share && navigator.canShare?.({ files: [file] })) {
+        // Android: Native paylaşım ekranını aç (WhatsApp, Instagram vs.)
+        if (_isMobile && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({
                 title: 'Packt Masa Tasarımım',
                 text: 'Packt Configurator ile oluşturduğum masa tasarımı → thepackt.co',
                 files: [file],
             });
         } else {
+            // Masaüstü: Görseli bilgisayara indir
             const url = URL.createObjectURL(blob);
             const a   = document.createElement('a');
             a.href    = url;
-            a.download = 'packt-design.png';
+            a.download = 'packt-tasarimim.png';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             toastGoster('Tasarım indirildi ↓', '✓', 2500);
         }
+
     } catch (err) {
         if (err.name !== 'AbortError') {
             console.error('Paylaşım hatası:', err);
