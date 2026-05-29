@@ -1885,27 +1885,85 @@ const _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 if (_isIOS) document.documentElement.classList.add('ios');
 
+// iOS için Canvas 2D API ile konfigüratör sahnesi çizimi.
+// CSS mix-blend-mode img'de çalışmaz ama canvas globalCompositeOperation çalışır.
+async function iosKonfiguratorYakala() {
+    const wrapper = document.getElementById('configurator-wrapper');
+    const rect    = wrapper.getBoundingClientRect();
+    const scale   = Math.min(window.devicePixelRatio || 1, 2);
+    const W = rect.width, H = rect.height;
+
+    const canvas  = document.createElement('canvas');
+    canvas.width  = Math.round(W * scale);
+    canvas.height = Math.round(H * scale);
+    const ctx = canvas.getContext('2d');
+    ctx.scale(scale, scale);
+
+    // Arka plan
+    ctx.fillStyle = '#f0ebe3';
+    ctx.fillRect(0, 0, W, H);
+
+    // Tüm görsel katmanları z-index sırasına göre topla
+    const katmanlar = [
+        { el: document.getElementById('surface-layer'), blend: 'multiply', alpha: 0.9 },
+        ...Array.from(wrapper.querySelectorAll('.aksesuar-layer'))
+               .map(el => ({ el, blend: 'source-over', alpha: 1, z: parseInt(el.style.zIndex)||0 }))
+               .filter(k => k.z < 100)
+               .sort((a, b) => a.z - b.z),
+        { el: document.getElementById('base-layer'), blend: 'multiply', alpha: 0.9 },
+        ...Array.from(wrapper.querySelectorAll('.aksesuar-layer'))
+               .map(el => ({ el, blend: 'source-over', alpha: 1, z: parseInt(el.style.zIndex)||0 }))
+               .filter(k => k.z >= 100)
+               .sort((a, b) => a.z - b.z),
+    ];
+
+    for (const { el, blend, alpha } of katmanlar) {
+        if (!el || el.style.display === 'none') continue;
+        // Yüklü değilse bekle
+        if (!el.complete) {
+            await new Promise(r => { el.onload = r; el.onerror = r; });
+        }
+        if (!el.naturalWidth) continue; // boş/hatalı img atla
+        try {
+            ctx.globalCompositeOperation = blend;
+            ctx.globalAlpha = alpha;
+            ctx.drawImage(el, 0, 0, W, H);
+        } catch(_) {}
+    }
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    return canvas;
+}
+
 async function shareDesign() {
     const btn = document.getElementById('share-btn');
     btn.classList.add('yukleniyor');
     btn.innerHTML = '<span style="font-size:11px">Hazırlanıyor…</span>';
 
-    // ── iOS: html2canvas SVG'leri yakalayamıyor — URL paylaş ──
+    // ── iOS: Canvas 2D API ile manuel render (multiply composite destekleniyor) ──
     if (_isIOS) {
         try {
-            const parcalar = [...new Set(takiliParcalar.map(p => URUN_KATALOGU[p.urunId].ad))];
-            const ozet = parcalar.length ? parcalar.join(', ') : 'henüz aksesuar yok';
-            if (navigator.share) {
+            const canvas = await iosKonfiguratorYakala();
+            const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+            const file = new File([blob], 'packt-design.png', { type: 'image/png' });
+            if (navigator.share && navigator.canShare?.({ files: [file] })) {
                 await navigator.share({
                     title: 'Packt Masa Tasarımım',
-                    text: `Masa: ${ozet} → thepackt.co`,
-                    url: window.location.href,
+                    text: 'Packt Configurator ile oluşturduğum masa tasarımı → thepackt.co',
+                    files: [file],
                 });
+            } else if (navigator.share) {
+                await navigator.share({ title: 'Packt Masa Tasarımım', url: window.location.href });
             } else {
-                toastGoster('Ekran görüntüsü alarak paylaşabilirsin', 'ℹ️', 3000);
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = 'packt-design.png';
+                document.body.appendChild(a); a.click();
+                document.body.removeChild(a); URL.revokeObjectURL(url);
+                toastGoster('Tasarım indirildi ↓', '✓', 2500);
             }
         } catch(e) {
-            if (e.name !== 'AbortError') toastGoster('Paylaşılamadı, ekran görüntüsü al', '⚠️', 3000);
+            if (e.name !== 'AbortError') toastGoster('Bir sorun oluştu, tekrar dene', '⚠️', 3000);
         } finally {
             btn.classList.remove('yukleniyor');
             btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Paylaş`;
