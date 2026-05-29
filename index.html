@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packt Configurator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <style>
+        :root {
+            /* Easing */
+            --ease-out-expo:      cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-quart:     cubic-bezier(0.25, 1, 0.5, 1);
+            --ease-spring:        cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-in-out-smooth: cubic-bezier(0.45, 0, 0.15, 1);
+            /* Packt Brand Colors */
+            --packt-tangerine: #f54f36;
+            --packt-dark:      #333132;
+            --packt-light:     #ededee;
+            /* Dark UI palette */
+            --bg:          #0c0b0a;
+            --surface:     #131210;
+            --surface-2:   #1a1916;
+            --border:      #242220;
+            --border-hover:#363330;
+            --text-primary:  #ededee;
+            --text-secondary:#9a9690;
+            --text-muted:    #625e58;
+            --accent:        #f54f36;
+            --accent-dim:    rgba(245,79,54,0.12);
+            --accent-dis:    rgba(245,79,54,0.14);
+            --accent-ic:     rgba(240,192,64,0.12);
+            /* Scene */
+            --scene-bg: #f0ebe3;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 20px 32px;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        #header {
+            width: 100%; max-width: 1200px;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        #header-logo {
+            display: flex; align-items: center; gap: 12px;
+        }
+        #header-logo img { flex-shrink: 0; }
+        #header-wordmark {
+            display: flex; flex-direction: column; gap: 1px;
+        }
+        #header-brand {
+            font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+            color: var(--text-primary); text-transform: uppercase;
+        }
+        #header-sub {
+            font-size: 9px; font-weight: 500; letter-spacing: 0.18em;
+            color: var(--text-muted); text-transform: uppercase;
+        }
+        #header-right { display: flex; gap: 8px; align-items: center; }
+
+        /* ── SELECTÖRler ── */
+        #selectors {
+            width: 100%; max-width: 1200px;
+            display: flex; gap: 12px; align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .selector-group { display: flex; gap: 4px; align-items: center; }
+        .selector-label-group {
+            display: flex; flex-direction: column; gap: 1px; margin-right: 4px;
+        }
+        .selector-label {
+            font-size: 9px; font-weight: 600; letter-spacing: 0.14em;
+            color: var(--text-secondary); text-transform: uppercase;
+        }
+        .selector-sublabel {
+            font-size: 9px; font-weight: 400; letter-spacing: 0.04em;
+            color: var(--text-secondary); text-transform: none;
+        }
+        /* Desktop: kısa label gizli. Mobile: uzun label gizli */
+        .sel-label-short { display: none; }
+        .sel-btn {
+            padding: 6px 13px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: rgba(255,255,255,0.03);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 11px; font-weight: 500; letter-spacing: 0.03em;
+            transition: border-color 0.2s var(--ease-out-quart),
+                        color 0.2s var(--ease-out-quart),
+                        background 0.2s var(--ease-out-quart),
+                        transform 0.1s var(--ease-out-expo);
+            will-change: transform;
+        }
+        .sel-btn:hover { border-color: var(--border-hover); color: var(--text-primary); background: rgba(255,255,255,0.055); }
+        .sel-btn:active { transform: scale(0.96); }
+        .sel-btn.aktif {
+            border-color: var(--text-primary); color: var(--text-primary);
+            background: rgba(237,237,238,0.08);
+        }
+
+        /* Model seçici — aktif halde Packt turuncusu */
+        .model-btn.aktif {
+            border-color: var(--accent); color: var(--accent);
+            background: var(--accent-dim);
+        }
+        .model-btn.aktif:hover { background: rgba(245,79,54,0.18); }
+
+        /* Ayak seçici renkleri */
+        .ayak-dis.aktif { border-color: var(--accent); color: var(--accent); background: var(--accent-dis); }
+        .ayak-ic.aktif  { border-color: #F0C040; color: #F0C040; background: var(--accent-ic); }
+
+        /* ── REHBER BUTONU ── */
+        #help-btn {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 12px;
+            border: 1px solid var(--border); border-radius: 6px;
+            background: transparent; color: var(--text-secondary); cursor: pointer;
+            font-size: 11px; font-weight: 500;
+            transition: border-color 0.2s, color 0.2s, transform 0.1s var(--ease-out-expo);
+        }
+        #help-btn:hover { border-color: var(--border-hover); color: var(--text-primary); }
+        #help-btn:active { transform: scale(0.96); }
+        #help-btn-icon {
+            width: 15px; height: 15px; border-radius: 50%;
+            border: 1.5px solid currentColor;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 700; flex-shrink: 0; line-height: 1;
+        }
+
+        /* ── REHBER MODALİ ── */
+        #help-modal {
+            position: fixed; inset: 0; z-index: 5000;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        #help-modal.acik { opacity: 1; pointer-events: all; }
+        #help-kart {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 18px; padding: 28px 28px 24px;
+            width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto;
+            transform: translateY(16px);
+            transition: transform 0.28s var(--ease-out-expo);
+        }
+        #help-modal.acik #help-kart { transform: translateY(0); }
+        #help-baslik {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 22px;
+        }
+        #help-baslik h2 {
+            font-size: 14px; font-weight: 700; letter-spacing: 0.03em;
+            color: var(--text-primary);
+        }
+        #help-kapat {
+            width: 28px; height: 28px; border-radius: 50%;
+            border: 1px solid var(--border); background: transparent;
+            color: var(--text-secondary); cursor: pointer; font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s, color 0.15s;
+        }
+        #help-kapat:hover { background: var(--surface-2); color: var(--text-primary); }
+        .help-adim {
+            display: flex; gap: 14px; align-items: flex-start;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .help-adim:last-child { border-bottom: none; padding-bottom: 0; }
+        .help-no {
+            width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+            background: var(--accent-dim); border: 1px solid rgba(245,79,54,0.25);
+            color: var(--accent); font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            margin-top: 1px;
+        }
+        .help-icerik { flex: 1; }
+        .help-icerik strong {
+            display: block; font-size: 12px; font-weight: 600;
+            color: var(--text-primary); margin-bottom: 3px;
+        }
+        .help-icerik span {
+            font-size: 11px; color: var(--text-secondary); line-height: 1.5;
+        }
+
+        /* ── MAIN LAYOUT ── */
+        #main-layout {
+            width: 100%; max-width: 1200px;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+
+        /* ── 3D GÖRÜNÜM ── */
+        #configurator-wrapper {
+            position: relative; width: 100%; aspect-ratio: 16/9;
+            background: var(--scene-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+        }
+        .layer { position: absolute; top:0; left:0; width:100%; height:100%; }
+        img.layer { object-fit: contain; }
+
+        #surface-layer { z-index: 1;   pointer-events: none; mix-blend-mode: multiply; opacity: 0.9; }
+        #base-layer    { z-index: 100; pointer-events: none; mix-blend-mode: multiply; opacity: 0.9; }
+        #guide-layer   { z-index: 150; pointer-events: none; opacity: 0.45; display: none; }
+        .aksesuar-layer {
+            pointer-events: none; object-fit: contain;
+            will-change: opacity, transform;
+            transition: opacity 0.2s var(--ease-out-expo), transform 0.2s var(--ease-out-expo);
+        }
+        @keyframes layerDropIn {
+            from { opacity: 0; transform: translateY(-12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .aksesuar-layer.enter {
+            animation: layerDropIn 0.38s var(--ease-out-expo) both;
+        }
+        #node-layer  { z-index: 200; overflow: visible; }
+
+        /* ── HOTSPOT STİLLERİ ── */
+        .hotspot {
+            fill: rgba(30,30,35,0.0); stroke: rgba(30,30,35,0.0); stroke-width: 2;
+            cursor: crosshair;
+            transition: fill 0.2s var(--ease-out-quart), stroke 0.2s var(--ease-out-quart), stroke-width 0.2s;
+        }
+        .hotspot:hover {
+            fill: rgba(30,30,40,0.10);
+            stroke: rgba(30,30,40,0.28); stroke-width: 2;
+        }
+        .hotspot.dolu { fill: rgba(40,40,50,0.06); }
+        .hotspot.dolu:hover {
+            fill: rgba(40,40,55,0.16); stroke: rgba(40,40,60,0.40); stroke-width: 2; cursor: pointer;
+        }
+        /* Ayak node'ları — kilitli görünüm */
+        .hotspot.ayak-dis-node { fill: rgba(255,122,69,0.10); stroke: rgba(255,122,69,0.18); cursor: not-allowed; }
+        .hotspot.ayak-dis-node:hover { fill: rgba(255,122,69,0.20); stroke: rgba(255,122,69,0.42); stroke-width: 1.5; }
+        .hotspot.ayak-ic-node  { fill: rgba(240,192,64,0.08); stroke: rgba(240,192,64,0.15); cursor: not-allowed; }
+        .hotspot.ayak-ic-node:hover  { fill: rgba(240,192,64,0.18); stroke: rgba(240,192,64,0.40); stroke-width: 1.5; }
+
+        /* ── ALT PANEL ── */
+        #right-panel { display: grid; grid-template-columns: 320px 1fr; gap: 10px; }
+        .panel-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+        .panel-card-header {
+            padding: 10px 14px; font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+            color: var(--text-secondary); text-transform: uppercase; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        #plan-canvas { display: block; width: 100%; background: var(--surface); }
+
+        /* Özet */
+        #ozet-listesi { padding: 10px 14px; min-height: 50px; }
+        .ozet-bos { font-size: 11px; color: var(--text-muted); text-align: center; padding: 12px 0; }
+        @keyframes ozetFadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .ozet-satir {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 7px 0; border-bottom: 1px solid var(--border);
+            animation: ozetFadeIn 0.28s var(--ease-out-quart) both;
+        }
+        .ozet-satir:last-child { border-bottom: none; }
+        .ozet-sol { display: flex; align-items: center; gap: 9px; }
+        .ozet-renk { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+        .ozet-ad { font-size: 12px; color: var(--text-primary); font-weight: 500; }
+        .ozet-adet { font-size: 11px; color: var(--text-secondary); }
+        .ozet-x {
+            background: transparent; border: none; color: var(--text-muted);
+            cursor: pointer; font-size: 15px; padding: 2px 4px; border-radius: 4px;
+            transition: color 0.15s; line-height: 1;
+        }
+        .ozet-x:hover { color: #e44; }
+        #toplam-satir {
+            padding: 9px 14px; border-top: 1px solid var(--border);
+            display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted);
+        }
+        #toplam-sayi { color: var(--text-secondary); font-weight: 600; }
+
+        /* ── SEÇIM MENÜSÜ ── */
+        #selection-menu {
+            display: none; position: fixed;
+            background: rgba(245,243,240,0.96);
+            backdrop-filter: blur(18px) saturate(1.4);
+            -webkit-backdrop-filter: blur(18px) saturate(1.4);
+            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: 14px; padding: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10);
+            z-index: 2000; min-width: 210px;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.22s var(--ease-out-expo),
+                        transform 0.22s var(--ease-out-expo);
+            pointer-events: none;
+        }
+        #selection-menu.acik {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        #selection-menu h3 {
+            font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+            color: rgba(51,49,50,0.45); margin-bottom: 8px;
+        }
+        .urun-secenegi {
+            display: flex; align-items: center; gap: 8px; width: 100%;
+            padding: 8px 10px; border: none; border-radius: 8px; background: transparent;
+            cursor: pointer; text-align: left; font-size: 13px; color: var(--packt-dark);
+            font-weight: 500;
+            transition: background 0.18s var(--ease-out-quart),
+                        transform 0.1s var(--ease-out-expo);
+        }
+        .urun-secenegi:hover { background: rgba(51,49,50,0.06); }
+        .urun-secenegi:active { transform: scale(0.98); }
+        .urun-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .urun-badge {
+            font-size: 10px; background: rgba(51,49,50,0.08); color: rgba(51,49,50,0.45);
+            padding: 2px 6px; border-radius: 4px; margin-left: auto; font-weight: 400;
+        }
+        #menu-kapat {
+            margin-top: 8px; width: 100%; padding: 7px;
+            border: 1px solid rgba(51,49,50,0.12); border-radius: 8px;
+            background: transparent; cursor: pointer; font-size: 11px; color: rgba(51,49,50,0.35);
+            transition: background 0.15s;
+        }
+        #menu-kapat:hover { background: rgba(51,49,50,0.05); }
+
+        /* ── TOAST BİLDİRİM ── */
+        #toast {
+            position: absolute; bottom: 5%; left: 50%;
+            transform: translateX(-50%) translateY(14px);
+            background: rgba(13,12,11,0.88);
+            backdrop-filter: blur(18px) saturate(1.6);
+            -webkit-backdrop-filter: blur(18px) saturate(1.6);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 28px;
+            padding: 9px 18px 9px 13px;
+            display: flex; align-items: center; gap: 9px;
+            font-size: 12px; font-weight: 450;
+            color: var(--text-secondary);
+            pointer-events: none; z-index: 3000;
+            opacity: 0; white-space: nowrap;
+            max-width: calc(100vw - 48px);
+            transition: opacity 0.2s ease, transform 0.28s var(--ease-out-expo);
+        }
+        #toast.gorunu { opacity: 1; transform: translateX(-50%) translateY(0); }
+        #toast-icon { font-size: 14px; flex-shrink: 0; line-height: 1; }
+        /* #toast, #configurator-wrapper aynı stacking context'te — z-index yeterli */
+
+        /* ── KALDIR ONAY MODALİ ── */
+        #kaldir-modal {
+            position: fixed; inset: 0; z-index: 4000;
+            display: flex; align-items: flex-end; justify-content: center;
+            padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.22s ease;
+        }
+        #kaldir-modal.acik { opacity: 1; pointer-events: all; }
+        #kaldir-kart {
+            background: var(--surface-2); border: 1px solid var(--border);
+            border-radius: 20px 20px 16px 16px;
+            padding: 20px 20px 16px;
+            width: 100%; max-width: 400px;
+            transform: translateY(20px);
+            transition: transform 0.28s var(--ease-out-expo);
+            margin: 0 12px;
+        }
+        #kaldir-modal.acik #kaldir-kart { transform: translateY(0); }
+        #kaldir-urun-adi {
+            font-size: 13px; font-weight: 600; color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        #kaldir-aciklama {
+            font-size: 11px; color: var(--text-secondary); margin-bottom: 18px;
+        }
+        #kaldir-butonlar { display: flex; gap: 8px; }
+        .kaldir-btn {
+            flex: 1; padding: 11px; border-radius: 10px;
+            border: 1px solid var(--border); font-size: 12px; font-weight: 500;
+            cursor: pointer; transition: background 0.15s ease, transform 0.1s ease;
+        }
+        .kaldir-btn:active { transform: scale(0.97); }
+        #kaldir-iptal { background: transparent; color: var(--text-secondary); }
+        #kaldir-iptal:hover { background: rgba(255,255,255,0.04); }
+        #kaldir-onayla { background: rgba(245,79,54,0.12); color: var(--accent); border-color: rgba(245,79,54,0.25); }
+        #kaldir-onayla:hover { background: rgba(245,79,54,0.20); }
+
+        #temizle-btn {
+            background: transparent; border: none; cursor: pointer;
+            font-size: 10px; color: var(--text-muted); letter-spacing: 0.5px; transition: color 0.15s;
+        }
+        #temizle-btn:hover { color: #e44; }
+
+        /* ── SHARE BUTTON ── */
+        #share-btn {
+            display: flex; align-items: center; gap: 7px;
+            padding: 8px 18px;
+            border: 1.5px solid var(--accent); border-radius: 8px;
+            background: var(--accent-dim); color: var(--accent);
+            cursor: pointer; font-size: 12px; font-weight: 600;
+            letter-spacing: 0.02em; white-space: nowrap;
+            box-shadow: 0 0 0 0 rgba(245,79,54,0);
+            transition: background 0.22s var(--ease-out-quart),
+                        box-shadow 0.22s var(--ease-out-quart),
+                        transform 0.12s var(--ease-out-expo);
+            will-change: transform;
+        }
+        #share-btn:hover {
+            background: rgba(245,79,54,0.22);
+            box-shadow: 0 0 0 3px rgba(245,79,54,0.15);
+        }
+        #share-btn:active { transform: scale(0.96); }
+        #share-btn.yukleniyor { opacity: 0.55; cursor: not-allowed; pointer-events: none; }
+        #share-btn svg { flex-shrink: 0; stroke: var(--accent); }
+
+
+        /* ── MENU BACKDROP (mobile) ── */
+        #menu-backdrop {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45); z-index: 1998;
+            backdrop-filter: blur(2px);
+        }
+        #menu-backdrop.aktif { display: block; }
+
+        /* Bottom-sheet handle pill */
+        .bs-handle {
+            display: none; width: 44px; height: 5px; border-radius: 3px;
+            background: #c0c0c0; margin: 0 auto 14px;
+        }
+
+        /* ── MOBILE RESPONSIVE ── */
+        @media (max-width: 768px) {
+            body { padding: 10px 10px; }
+            #header { margin-bottom: 8px; }
+            #header-brand { font-size: 11px; }
+            #header-sub { display: none; }
+
+            /* Selektörler — 2 satırlı grid: [etiket] [butonlar] */
+            #selectors {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                grid-template-rows: auto auto;
+                gap: 7px 10px;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+            .selector-label-group {
+                flex-direction: row; align-items: center; gap: 0; margin-right: 0;
+            }
+            .sel-label-long  { display: none; }
+            .sel-label-short { display: block; font-size: 9px; white-space: nowrap; }
+            .selector-sublabel { display: none; }
+            .selector-group { flex-wrap: wrap; }
+            /* İkinci label-group'un desktop margin'ini sıfırla */
+            #selectors .selector-label-group { margin-left: 0 !important; }
+
+            #right-panel { grid-template-columns: 1fr; }
+            #plan-canvas { height: 130px; }
+
+            /* Larger tap targets for SVG hotspots in viewBox space */
+            .hotspot { r: 62; touch-action: manipulation; }
+
+            .bs-handle { display: block; }
+
+            /* Bottom-sheet behaviour for selection menu */
+            #selection-menu {
+                position: fixed !important;
+                left: 0 !important; right: 0 !important;
+                bottom: 0 !important; top: auto !important;
+                width: 100% !important; min-width: unset !important;
+                border-radius: 20px 20px 0 0 !important;
+                padding: 16px 16px 36px !important;
+                opacity: 1 !important;
+                transform: translateY(100%) !important;
+                transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1) !important;
+                max-height: 72vh; overflow-y: auto;
+            }
+            #selection-menu.acik { transform: translateY(0) !important; }
+
+            /* Alıntı — mobile */
+            #quote-overlay { max-width: 58%; bottom: 3%; right: 3%; }
+            #quote-mark    { font-size: 20px; margin-bottom: 3px; }
+            #quote-text    { font-size: 9px; line-height: 1.5; padding-right: 8px; }
+
+            /* Onboarding — mobile */
+            #onboarding    { top: 3%; left: 3%; max-width: 60%; }
+
+        }
+
+        /* ── ALINTI OVERLAY ── */
+        #quote-overlay {
+            position: absolute; bottom: 5%; right: 4%;
+            max-width: 36%;
+            text-align: right;
+            pointer-events: none; z-index: 185;
+            opacity: 0;
+            transition: opacity 1.6s var(--ease-out-expo);
+        }
+        #quote-overlay.gorunu { opacity: 1; }
+        #quote-mark {
+            font-family: Inter, -apple-system, sans-serif;
+            font-size: clamp(32px, 4vw, 56px);
+            font-weight: 200;
+            line-height: 0.6;
+            color: var(--accent);
+            opacity: 0.45;
+            display: block;
+            margin-bottom: 6px;
+            user-select: none;
+            letter-spacing: -0.02em;
+        }
+        #quote-text {
+            font-size: clamp(11px, 1.15vw, 16px);
+            font-style: normal;
+            font-weight: 300;
+            color: #333132;
+            opacity: 0.72;
+            line-height: 1.6;
+            letter-spacing: 0.005em;
+            padding-right: 12px;
+            border-right: 1.5px solid rgba(245,79,54,0.28);
+            margin: 0;
+        }
+
+        /* ── ONBOARDING OVERLAY ── */
+        #onboarding {
+            position: absolute; top: 5%; left: 4%;
+            display: flex; flex-direction: column;
+            align-items: flex-start; gap: 8px;
+            pointer-events: none; z-index: 190;
+            max-width: 42%;
+            transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
+        }
+#onboarding.gizli { opacity: 0; transform: translateY(-10px) translateX(-6px); }
+        #onboarding-slogan {
+            font-size: clamp(14px, 1.9vw, 26px);
+            font-weight: 700; letter-spacing: 0.01em; line-height: 1.15;
+            background: linear-gradient(105deg, #2a2727 0%, #f54f36 55%, #2a2727 100%);
+            background-size: 280% auto;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            animation: onb-shimmer 4s ease-in-out infinite;
+        }
+        #onboarding.gizli #onboarding-slogan { animation-play-state: paused; }
+        @keyframes onb-shimmer {
+            0%   { background-position: 220% center; }
+            100% { background-position: -80% center; }
+        }
+        #onboarding-hint {
+            font-size: clamp(7px, 0.75vw, 10px); font-weight: 500;
+            color: #333132; opacity: 0.45;
+            letter-spacing: 0.1em; text-transform: uppercase;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="header">
+    <div id="header-logo">
+        <img src="packt-logo.svg" alt="Packt" height="28" style="display:block;flex-shrink:0">
+        <div id="header-wordmark">
+            <span id="header-brand">Packt</span>
+            <span id="header-sub">Configurator</span>
+        </div>
+    </div>
+    <div id="header-right">
+        <button id="help-btn" onclick="helpAc()">
+            <span id="help-btn-icon">?</span>
+            Nasıl Kullanılır
+        </button>
+        <button id="share-btn" onclick="shareDesign()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                <polyline points="16 6 12 2 8 6"/>
+                <line x1="12" y1="2" x2="12" y2="15"/>
+            </svg>
+            Paylaş
+        </button>
+    </div>
+</div>
+
+<!-- SELEKTÖRLER: Model + Ayak Pozisyonu -->
+<div id="selectors">
+    <div class="selector-label-group">
+        <span class="selector-label sel-label-long">Masa Modeli</span>
+        <span class="selector-label sel-label-short">Model</span>
+        <span class="selector-sublabel">boyutu seçin</span>
+    </div>
+    <div class="selector-group">
+        <button class="sel-btn model-btn aktif" onclick="baseSecimiYap('b01',this)" title="Küçük — 6 kolon">B01</button>
+        <button class="sel-btn model-btn"       onclick="baseSecimiYap('b02',this)" title="Orta — 9 kolon">B02</button>
+        <button class="sel-btn model-btn"       onclick="baseSecimiYap('b03',this)" title="Büyük — 13 kolon">B03</button>
+    </div>
+
+    <div class="selector-label-group" style="margin-left:14px">
+        <span class="selector-label sel-label-long">Ayak Pozisyonu</span>
+        <span class="selector-label sel-label-short">Ayak</span>
+        <span class="selector-sublabel">yerleşim seçin</span>
+    </div>
+    <div class="selector-group">
+        <button class="sel-btn ayak-dis aktif" onclick="ayakSecimiYap('dis',this)">Dışta</button>
+        <button class="sel-btn ayak-ic"        onclick="ayakSecimiYap('ic',this)">İçte</button>
+    </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div id="main-layout">
+
+    <!-- SOL: 3D GÖRÜNÜM -->
+    <div id="configurator-wrapper">
+
+        <!-- Masa yüzeyi — daima görünür, z:1 -->
+        <img id="surface-layer" class="layer" alt="Yüzey">
+
+        <!-- Ayak detayları — ayak pozisyonuna göre değişir, z:100 -->
+        <img id="base-layer" class="layer" alt="Ayaklar">
+
+        <!-- Node kılavuz görseli — toggle ile, src JS'de atanır, z:150 -->
+        <img id="guide-layer" class="layer" alt="">
+
+        <!--
+            NODE KATMANI — viewBox = 1920×1080 (Illustrator artboard ile eşleşiyor)
+            Koordinatlar BASE01/02/03 NODE.svg'lerindeki kırmızı elips merkezlerinden alındı.
+            Adım: B/F içi = +124x −36y | Derinlik B→F = +143x +124y
+        -->
+        <svg id="node-layer" class="layer" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+
+            <!-- ══ BASE 01 ══  B1-B6  F1-F6  LM  RM -->
+            <g id="nodes-b01">
+                <circle class="hotspot" cx="147"  cy="689" r="38" data-id="B1" data-row="B" data-col="1" data-z="6"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="271"  cy="653" r="38" data-id="B2" data-row="B" data-col="2" data-z="5"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="395"  cy="617" r="38" data-id="B3" data-row="B" data-col="3" data-z="4"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="519"  cy="581" r="38" data-id="B4" data-row="B" data-col="4" data-z="3"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="643"  cy="545" r="38" data-id="B5" data-row="B" data-col="5" data-z="2"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="767"  cy="509" r="38" data-id="B6" data-row="B" data-col="6" data-z="1"  data-yonler="on,sag,arka"     onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="290"  cy="813" r="38" data-id="F1" data-row="F" data-col="1" data-z="46" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="414"  cy="777" r="38" data-id="F2" data-row="F" data-col="2" data-z="45" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="538"  cy="741" r="38" data-id="F3" data-row="F" data-col="3" data-z="44" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="662"  cy="705" r="38" data-id="F4" data-row="F" data-col="4" data-z="43" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="786"  cy="669" r="38" data-id="F5" data-row="F" data-col="5" data-z="42" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="910"  cy="633" r="38" data-id="F6" data-row="F" data-col="6" data-z="41" data-yonler="on,sag,arka"     onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="220"  cy="756" r="38" data-id="LM" data-row="M" data-col="0"  data-z="20" data-yonler="sol" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="839"  cy="571" r="38" data-id="RM" data-row="M" data-col="99" data-z="25" data-yonler="sag" onclick="nodeaTikla(this)"/>
+            </g>
+
+            <!-- ══ BASE 02 ══  B1-B9  F1-F9  LM  RM02 -->
+            <g id="nodes-b02" style="display:none">
+                <circle class="hotspot" cx="147"  cy="689" r="38" data-id="B1" data-row="B" data-col="1" data-z="9"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="271"  cy="653" r="38" data-id="B2" data-row="B" data-col="2" data-z="8"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="395"  cy="617" r="38" data-id="B3" data-row="B" data-col="3" data-z="7"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="519"  cy="581" r="38" data-id="B4" data-row="B" data-col="4" data-z="6"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="643"  cy="545" r="38" data-id="B5" data-row="B" data-col="5" data-z="5"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="767"  cy="509" r="38" data-id="B6" data-row="B" data-col="6" data-z="4"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="891"  cy="473" r="38" data-id="B7" data-row="B" data-col="7" data-z="3"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1015" cy="437" r="38" data-id="B8" data-row="B" data-col="8" data-z="2"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1139" cy="401" r="38" data-id="B9" data-row="B" data-col="9" data-z="1"  data-yonler="on,sag,arka"     onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="290"  cy="813" r="38" data-id="F1" data-row="F" data-col="1" data-z="49" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="414"  cy="777" r="38" data-id="F2" data-row="F" data-col="2" data-z="48" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="538"  cy="741" r="38" data-id="F3" data-row="F" data-col="3" data-z="47" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="662"  cy="705" r="38" data-id="F4" data-row="F" data-col="4" data-z="46" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="786"  cy="669" r="38" data-id="F5" data-row="F" data-col="5" data-z="45" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="910"  cy="633" r="38" data-id="F6" data-row="F" data-col="6" data-z="44" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1034" cy="597" r="38" data-id="F7" data-row="F" data-col="7" data-z="43" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1158" cy="561" r="38" data-id="F8" data-row="F" data-col="8" data-z="42" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1282" cy="525" r="38" data-id="F9" data-row="F" data-col="9" data-z="41" data-yonler="on,sag,arka"     onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="220"  cy="756" r="38" data-id="LM" data-row="M" data-col="0"  data-z="20" data-yonler="sol" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1211" cy="463" r="38" data-id="RM" data-row="M" data-col="99" data-z="25" data-yonler="sag" onclick="nodeaTikla(this)"/>
+            </g>
+
+            <!-- ══ BASE 03 ══  B1-B13  F1-F13  LM  RM03 -->
+            <g id="nodes-b03" style="display:none">
+                <circle class="hotspot" cx="147"  cy="689" r="38" data-id="B1"  data-row="B" data-col="1"  data-z="13" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="271"  cy="653" r="38" data-id="B2"  data-row="B" data-col="2"  data-z="12" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="395"  cy="617" r="38" data-id="B3"  data-row="B" data-col="3"  data-z="11" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="519"  cy="581" r="38" data-id="B4"  data-row="B" data-col="4"  data-z="10" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="643"  cy="545" r="38" data-id="B5"  data-row="B" data-col="5"  data-z="9"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="767"  cy="509" r="38" data-id="B6"  data-row="B" data-col="6"  data-z="8"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="891"  cy="473" r="38" data-id="B7"  data-row="B" data-col="7"  data-z="7"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1015" cy="437" r="38" data-id="B8"  data-row="B" data-col="8"  data-z="6"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1139" cy="401" r="38" data-id="B9"  data-row="B" data-col="9"  data-z="5"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1263" cy="365" r="38" data-id="B10" data-row="B" data-col="10" data-z="4"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1387" cy="329" r="38" data-id="B11" data-row="B" data-col="11" data-z="3"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1511" cy="293" r="38" data-id="B12" data-row="B" data-col="12" data-z="2"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1635" cy="257" r="38" data-id="B13" data-row="B" data-col="13" data-z="1"  data-yonler="on,sag,arka"     onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="290"  cy="813" r="38" data-id="F1"  data-row="F" data-col="1"  data-z="53" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="414"  cy="777" r="38" data-id="F2"  data-row="F" data-col="2"  data-z="52" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="538"  cy="741" r="38" data-id="F3"  data-row="F" data-col="3"  data-z="51" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="662"  cy="705" r="38" data-id="F4"  data-row="F" data-col="4"  data-z="50" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="786"  cy="669" r="38" data-id="F5"  data-row="F" data-col="5"  data-z="49" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="910"  cy="633" r="38" data-id="F6"  data-row="F" data-col="6"  data-z="48" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1034" cy="597" r="38" data-id="F7"  data-row="F" data-col="7"  data-z="47" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1158" cy="561" r="38" data-id="F8"  data-row="F" data-col="8"  data-z="46" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1282" cy="525" r="38" data-id="F9"  data-row="F" data-col="9"  data-z="45" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1406" cy="489" r="38" data-id="F10" data-row="F" data-col="10" data-z="44" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1530" cy="453" r="38" data-id="F11" data-row="F" data-col="11" data-z="43" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1654" cy="417" r="38" data-id="F12" data-row="F" data-col="12" data-z="42" data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1778" cy="381" r="38" data-id="F13" data-row="F" data-col="13" data-z="41" data-yonler="on,sag,arka"     onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="220"  cy="756" r="38" data-id="LM"  data-row="M" data-col="0"  data-z="20" data-yonler="sol" onclick="nodeaTikla(this)"/>
+                <circle class="hotspot" cx="1707" cy="319" r="38" data-id="RM"  data-row="M" data-col="99" data-z="25" data-yonler="sag" onclick="nodeaTikla(this)"/>
+            </g>
+        </svg>
+
+        <!-- ALINTI OVERLAY — onboarding kapandıktan sonra kalıcı olarak görünür -->
+        <div id="quote-overlay">
+            <span id="quote-mark">"</span>
+            <p id="quote-text">Çevremizi biz şekillendiririz;<br>ardından o bizi şekillendirir.</p>
+        </div>
+
+        <!-- TOAST BİLDİRİM (sahne içinde, absolute) -->
+        <div id="toast">
+            <span id="toast-icon"></span>
+            <span id="toast-mesaj"></span>
+        </div>
+
+        <!-- ONBOARDING OVERLAY -->
+        <div id="onboarding">
+            <div id="onboarding-slogan">Kendi Packt'ini Oluştur</div>
+            <div id="onboarding-hint">Bir aksesuar eklemek için masadaki noktalardan birine dokun</div>
+        </div>
+
+    </div>
+
+    <!-- SAĞ PANEL -->
+    <div id="right-panel">
+        <div class="panel-card">
+            <div class="panel-card-header">
+                <span>2D Plan</span>
+                <span id="ayak-durum-label" style="font-size:9px;color:var(--text-muted)"></span>
+            </div>
+            <canvas id="plan-canvas" width="320" height="190"></canvas>
+        </div>
+        <div class="panel-card">
+            <div class="panel-card-header">
+                <span>Aksesuar Listesi</span>
+                <button id="temizle-btn" onclick="hepsiniTemizle()">Tümünü Kaldır</button>
+            </div>
+            <div id="ozet-listesi"><div class="ozet-bos">Henüz aksesuar eklenmedi</div></div>
+            <div id="toplam-satir">
+                <span>Toplam</span>
+                <span id="toplam-sayi">0 parça</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MENU BACKDROP (mobile bottom-sheet overlay) -->
+<div id="menu-backdrop" onclick="menuKapat()"></div>
+
+<!-- SEÇIM MENÜSÜ -->
+<div id="selection-menu">
+    <div class="bs-handle"></div>
+    <h3>AKSESUAR SEÇ</h3>
+    <div id="secenekler-listesi"></div>
+    <button id="menu-kapat" onclick="menuKapat()">İptal</button>
+</div>
+
+<!-- NASIL KULLANILIR MODALİ -->
+<div id="help-modal" onclick="helpKapat()">
+    <div id="help-kart" onclick="event.stopPropagation()">
+        <div id="help-baslik">
+            <h2>Nasıl Kullanılır?</h2>
+            <button id="help-kapat" onclick="helpKapat()">✕</button>
+        </div>
+
+        <div class="help-adim">
+            <div class="help-no">1</div>
+            <div class="help-icerik">
+                <strong>Masa modelini seç</strong>
+                <span>Üstteki <em>Masa Modeli</em> seçeneğinden masanın boyutunu belirle. B01 küçük, B02 orta, B03 büyük masaya karşılık gelir.</span>
+            </div>
+        </div>
+        <div class="help-adim">
+            <div class="help-no">2</div>
+            <div class="help-icerik">
+                <strong>Ayak pozisyonunu seç</strong>
+                <span><em>Dışta</em> seçeneğinde ayaklar masanın köşelerinde, <em>İçte</em> seçeneğinde içe çekilmiş konumda olur.</span>
+            </div>
+        </div>
+        <div class="help-adim">
+            <div class="help-no">3</div>
+            <div class="help-icerik">
+                <strong>Noktaya dokun</strong>
+                <span>Masa üzerindeki küçük kırmızı noktalara tıkla ya da dokun. Her nokta farklı bir aksesuar konumunu temsil eder.</span>
+            </div>
+        </div>
+        <div class="help-adim">
+            <div class="help-no">4</div>
+            <div class="help-icerik">
+                <strong>Aksesuar seç ve ekle</strong>
+                <span>Açılan listeden istediğin aksesuarı seç — eklendiğini 3D görünümde anında görebilirsin.</span>
+            </div>
+        </div>
+        <div class="help-adim">
+            <div class="help-no">5</div>
+            <div class="help-icerik">
+                <strong>Tasarımını paylaş</strong>
+                <span>Hazır olduğunda sağ üstteki <em>Paylaş</em> butonuna bas. Tasarımın görsel olarak kaydedilir veya paylaşılır.</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- KALDIR ONAY MODALİ -->
+<div id="kaldir-modal" onclick="kaldirIptal()">
+    <div id="kaldir-kart" onclick="event.stopPropagation()">
+        <div id="kaldir-urun-adi"></div>
+        <div id="kaldir-aciklama">Bu aksesuarı kaldırmak istiyor musunuz?</div>
+        <div id="kaldir-butonlar">
+            <button class="kaldir-btn" id="kaldir-iptal"  onclick="kaldirIptal()">İptal</button>
+            <button class="kaldir-btn" id="kaldir-onayla" onclick="kaldirOnayla()">Kaldır</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+// ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+// YÜZEY HARİTASI — daima görünür masa yüzeyi
+// ════════════════════════════════════════════════════════════
+const BASE_SURFACE_MAP = {
+    b01: "BASE-01.svg",
+    b02: "BASE-02.svg",
+    b03: "BASE-03.svg"
+};
+
+// ════════════════════════════════════════════════════════════
+// AYAK DOSYA HARİTASI — ayak pozisyonuna göre değişen SVG
+// ════════════════════════════════════════════════════════════
+const BASE_SVG_MAP = {
+    b01: {
+        dis: "BASE-01-AYAK-DISTA-B1-LM-F1-B6-RM-F6.svg",
+        ic:  "BASE-01-AYAK-ICTE-B2-F2-B5-F5.svg",
+    },
+    b02: {
+        dis: "BASE-02-AYAK-DISTA-B1-LM-F1-B9-RM-F9.svg",
+        ic:  "BASE-02-AYAK-ICTE-B2-F2-B8-F8.svg",
+    },
+    b03: {
+        dis: "BASE-03-AYAK-DISTA-B1-LM-F1-B13-RM-F13.svg",
+        ic:  "BASE-03-AYAK-ICTE-B2-F2-B12-F12.svg",
+    }
+};
+// AYAK BLOKLAMA HARİTASI
+// Ayakların kapladığı node ID'leri → bu node'lara aksesuar takilamaz.
+// ════════════════════════════════════════════════════════════
+const AYAK_NODELAR = {
+    b01: {
+        dis: ["B1", "LM", "F1", "B6", "RM", "F6"],
+        ic:  ["B2", "F2", "B5", "F5"]
+    },
+    b02: {
+        dis: ["B1", "LM", "F1", "B9", "RM", "F9"],
+        ic:  ["B2", "F2", "B8", "F8"]
+    },
+    b03: {
+        dis: ["B1", "LM", "F1", "B13", "RM", "F13"],
+        ic:  ["B2", "F2", "B12", "F12"]
+    }
+};
+
+// ════════════════════════════════════════════════════════════
+// ÜRÜN KATALOĞU
+//
+// footprint tiplerine göre:
+//   [{dCol, dRow}]  → göreli ofset; dRow="same"|"other"|"B"|"F" (mutlak satır)
+//   "left-corner"   → ["B1","LM","F1"]
+//   "right-corner"  → ["B{max}","RM","F{max}"]
+//
+// dosyaId  : ürün ID'si dosya adında farklıysa buraya yaz (yoksa urunId kullanılır)
+// triggerRow: "B"|"F" — sadece bu sıra tıklandığında görünür (null = her sıra)
+// triggerNodes: belirli node'lardan biri tıklandığında görünür (null = her node)
+// Yön kodları: on | sol | sag | arka
+// ════════════════════════════════════════════════════════════
+const URUN_KATALOGU = {
+    // gap: 1 → yerleştirilirken aynı sırada komşu holder'larla 1 boş node boşluk gerekir
+    // ayakOrtagi: true → ayak node'larıyla örtüşmeye izin verilir (SVG bunu öngörüyor)
+    // ekFootprint → dosya adında görünmez ama bu ek node'lar da bloklanır
+
+    // ── HOLDER 01: Kontrolcü Standı — tek F-node ──
+    "holder01": {
+        ad: "Kontrolcü Standı", boyut: "1 F-node",
+        footprint: [{ dCol: 0, dRow: "same" }],
+        yonler: ["on"], renk: "#4A9EFF", triggerRow: "F", gap: 1
+    },
+    // ── HOLDER 02: Telefon Standı — tek F-node ──
+    "holder02": {
+        ad: "Telefon Standı", boyut: "1 F-node",
+        footprint: [{ dCol: 0, dRow: "same" }],
+        yonler: ["on"], renk: "#50C878", triggerRow: "F", gap: 1
+    },
+    // ── HOLDER 03: Tablet Standı — tek F-node ──
+    "holder03": {
+        ad: "Tablet Standı", boyut: "1 F-node",
+        footprint: [{ dCol: 0, dRow: "same" }],
+        yonler: ["on"], renk: "#B088FF", triggerRow: "F", gap: 1
+    },
+    // ── HOLDER 04: Laptop Standı · Açık — 3 ardışık F-node ──
+    "holder04": {
+        ad: "Laptop Standı · Açık", boyut: "3 F-node",
+        footprint: [
+            { dCol: 0, dRow: "same" },
+            { dCol: 1, dRow: "same" },
+            { dCol: 2, dRow: "same" }
+        ],
+        yonler: ["on"], renk: "#FF88AA", triggerRow: "F", gap: 1, zIndex: 195, bgFill: true
+    },
+    // ── HOLDER 05: Laptop Standı · Kapalı — 3 ardışık B-node ──
+    "holder05": {
+        ad: "Laptop Standı · Kapalı", boyut: "3 B-node",
+        footprint: [
+            { dCol: 0, dRow: "same" },
+            { dCol: 1, dRow: "same" },
+            { dCol: 2, dRow: "same" }
+        ],
+        yonler: ["arka"], renk: "#FFB347", triggerRow: "B", gap: 1
+    },
+    "holder05-sol-kose": {
+        ad: "Laptop Standı · Kapalı Sol Köşe", boyut: "B1 + LM + F1",
+        footprint: "left-corner",
+        yonler: ["sol"], renk: "#FF9A3C",
+        triggerNodes: ["B1", "LM", "F1"]
+    },
+    "holder05-sag-kose": {
+        ad: "Laptop Standı · Kapalı Sağ Köşe", boyut: "B? + RM + F?",
+        footprint: "right-corner",
+        yonler: ["sag"], renk: "#FF7A45",
+        triggerNodes: ["RM"]
+    },
+    // ── HOLDER 06: Kulaklik Standı — tek node ──
+    "holder06-arka": {
+        ad: "Kulaklik Standı", boyut: "1 B-node",
+        dosyaId: "holder06",
+        footprint: [{ dCol: 0, dRow: "same" }],
+        yonler: ["arka"], renk: "#FF6B6B", triggerRow: "B", gap: 1
+    },
+    "holder06-on": {
+        ad: "Kulaklik Standı (Köşe Ön)", boyut: "1 F-node",
+        dosyaId: "holder06",
+        footprint: [{ dCol: 0, dRow: "same" }],
+        yonler: ["on"], renk: "#FF6B6B", triggerRow: "F", gap: 1, cornerFront: true
+    },
+    "holder06-sol": {
+        ad: "Kulaklik Standı Sol", boyut: "LM",
+        dosyaId: "holder06",
+        footprint: [{ dCol: 0, dRow: "same" }],
+        yonler: ["sol"], renk: "#FF6B6B",
+        triggerNodes: ["LM"], ayakOrtagi: true
+    },
+    "holder06-sag": {
+        ad: "Kulaklik Standı Sağ", boyut: "RM",
+        dosyaId: "holder06",
+        footprint: [{ dCol: 0, dRow: "same" }],
+        yonler: ["sag"], renk: "#FF6B6B",
+        triggerNodes: ["RM"], ayakOrtagi: true
+    },
+    // ── HOLDER 06 V2: Kulaklik Standı-2 ──
+    "holder06v2-arka": {
+        ad: "Kulaklik Standı-2", boyut: "1 B-node",
+        dosyaId: "holder06v2",
+        footprint: [{ dCol: 0, dRow: "same" }],
+        yonler: ["arka"], renk: "#FF9966", triggerRow: "B", gap: 1
+    },
+    "holder06v2-on": {
+        ad: "Kulaklik Standı-2 (Köşe Ön)", boyut: "1 F-node",
+        dosyaId: "holder06v2",
+        footprint: [{ dCol: 0, dRow: "same" }],
+        yonler: ["on"], renk: "#FF9966", triggerRow: "F", gap: 1, cornerFront: true
+    },
+    "holder06v2-sol": {
+        ad: "Kulaklik Standı-2 Sol", boyut: "LM",
+        dosyaId: "holder06v2",
+        footprint: [{ dCol: 0, dRow: "same" }],
+        yonler: ["sol"], renk: "#FF9966",
+        triggerNodes: ["LM"], ayakOrtagi: true
+    },
+    "holder06v2-sag": {
+        ad: "Kulaklik Standı-2 Sağ", boyut: "RM",
+        dosyaId: "holder06v2",
+        footprint: [{ dCol: 0, dRow: "same" }],
+        yonler: ["sag"], renk: "#FF9966",
+        triggerNodes: ["RM"], ayakOrtagi: true
+    },
+    // ── BASE 05: Plato · Tepsi S ── 2×2 (B+F, 2 kolon)
+    "base05": {
+        ad: "Plato · Tepsi S", boyut: "2 kolon (B+F)",
+        footprint: [
+            { dCol: 0, dRow: "B" }, { dCol: 1, dRow: "B" },
+            { dCol: 0, dRow: "F" }, { dCol: 1, dRow: "F" }
+        ],
+        yonler: ["arka"], renk: "#66CCAA", triggerRow: null, gap: 1
+    },
+    // ── BASE 06: Plato · Tepsi M — B+F, 5 kolon ──
+    // ayakOrtagi: köşe node'ları (dCol 0 ve 4) ayaklarla çakışabilir, SVG bunu göze alır.
+    // ekFootprint: dosya adında yer almaz ama ara node'lar da bloke edilir.
+    "base06": {
+        ad: "Plato · Tepsi M", boyut: "5 kolon (B+F)",
+        footprint: [
+            { dCol: 0, dRow: "B" }, { dCol: 4, dRow: "B" },
+            { dCol: 0, dRow: "F" }, { dCol: 4, dRow: "F" }
+        ],
+        // Yalnızca F-sırası ara node'lar bloklanır; B-sırası ara node'lar (B3-B5 vb.)
+        // sadece köşe bağlantı noktasına sahip olduğundan üzerine holder takılabilir.
+        ekFootprint: [
+            { dCol: 1, dRow: "F" }, { dCol: 2, dRow: "F" }, { dCol: 3, dRow: "F" }
+        ],
+        yonler: ["arka"], renk: "#AA88FF", triggerRow: null,
+        ayakOrtagi: true, lmAnchor: true
+    }
+};
+
+// ════════════════════════════════════════════════════════════
+// DURUM (STATE)
+// ════════════════════════════════════════════════════════════
+let seciliBase    = "b01";
+let ayakPozisyonu = "dis";   // "dis" | "ic"
+let aktifNode     = null;
+let takiliParcalar = [];
+
+// ════════════════════════════════════════════════════════════
+// TÜRKÇE KARAKTER TEMİZLEYİCİ
+// ════════════════════════════════════════════════════════════
+function sanitize(s) {
+    return s.replace(/ö/g,'o').replace(/Ö/g,'O')
+            .replace(/ş/g,'s').replace(/Ş/g,'S')
+            .replace(/ğ/g,'g').replace(/Ğ/g,'G')
+            .replace(/ı/g,'i').replace(/İ/g,'I')
+            .replace(/ü/g,'u').replace(/Ü/g,'U')
+            .replace(/ç/g,'c').replace(/Ç/g,'C')
+            .replace(/\s+/g,'-');
+}
+
+// ════════════════════════════════════════════════════════════
+// MEVCUT SVG DOSYALARI
+// Sadece bu listede adı geçen dosyalar için menüde seçenek çıkar.
+// Kural: "{base}.{productId}.{nodelar}.{yon}.svg"
+// Yeni bir SVG tasarlayıp klasöre ekledikçe buraya da ekle.
+// ════════════════════════════════════════════════════════════
+const MEVCUT_SVGLER = new Set([
+    // ── HOLDER 01 ─────────────────────────────────────────
+    "b01/b01.holder01.F2.on.svg","b01/b01.holder01.F3.on.svg","b01/b01.holder01.F4.on.svg",
+    "b01/b01.holder01.F5.on.svg","b01/b01.holder01.F6.on.svg",
+    "b02/b02.holder01.F7.on.svg","b02/b02.holder01.F8.on.svg","b02/b02.holder01.F9.on.svg",
+    "b03/b03.holder01.F11.on.svg","b03/b03.holder01.F12.on.svg",
+    // ── HOLDER 02 ─────────────────────────────────────────
+    "b01/b01.holder02.F2.on.svg","b01/b01.holder02.F3.on.svg","b01/b01.holder02.F4.on.svg",
+    "b01/b01.holder02.F5.on.svg","b01/b01.holder02.F6.on.svg",
+    "b02/b02.holder02.F7.on.svg","b02/b02.holder02.F8.on.svg","b02/b02.holder02.F9.on.svg",
+    "b03/b03.holder02.F10.on.svg","b03/b03.holder02.F11.on.svg","b03/b03.holder02.F12.on.svg",
+    // ── HOLDER 03 ─────────────────────────────────────────
+    "b01/b01.holder03.F2.on.svg","b01/b01.holder03.F3.on.svg","b01/b01.holder03.F4.on.svg",
+    "b01/b01.holder03.F5.on.svg","b01/b01.holder03.F6.on.svg",
+    "b02/b02.holder03.F7.on.svg","b02/b02.holder03.F8.on.svg","b02/b02.holder03.F9.on.svg",
+    "b03/b03.holder03.F10.on.svg","b03/b03.holder03.F11.on.svg","b03/b03.holder03.F12.on.svg",
+    // ── HOLDER 04 ─────────────────────────────────────────
+    "b01/b01.holder04.F2-F3-F4.on.svg","b01/b01.holder04.F3-F4-F5.on.svg","b01/b01.holder04.F4-F5-F6.on.svg",
+    "b02/b02.holder04.F5-F6-F7.on.svg","b02/b02.holder04.F6-F7-F8.on.svg","b02/b02.holder04.F7-F8-F9.on.svg",
+    "b03/b03.holder04.F8-F9-F10.on.svg","b03/b03.holder04.F9-F10-F11.on.svg","b03/b03.holder04.F10-F11-F12.on.svg",
+    // ── HOLDER 05 ─────────────────────────────────────────
+    "b01/b01.holder05.B2-B3-B4.arka.svg","b01/b01.holder05.B3-B4-B5.arka.svg","b01/b01.holder05.B4-B5-B6.arka.svg",
+    "b02/b02.holder05.B5-B6-B7.arka.svg","b02/b02.holder05.B6-B7-B8.arka.svg","b02/b02.holder05.B7-B8-B9.arka.svg",
+    "b03/b03.holder05.B8-B9-B10.arka.svg","b03/b03.holder05.B9-B10-B11.arka.svg","b03/b03.holder05.B10-B11-B12.arka.svg",
+    "b01/b01.holder05.B1-LM-F1.sol.svg",
+    "b01/b01.holder05.B6-RM-F6.sag.svg","b02/b02.holder05.B9-RM-F9.sag.svg","b03/b03.holder05.B13-RM-F13.sag.svg",
+    // ── HOLDER 06 (B-sırası) ──────────────────────────────
+    "b01/b01.holder06.B1.arka.svg","b01/b01.holder06.B2.arka.svg","b01/b01.holder06.B3.arka.svg",
+    "b01/b01.holder06.B4.arka.svg","b01/b01.holder06.B5.arka.svg","b01/b01.holder06.B6.arka.svg",
+    "b02/b02.holder06.B7.arka.svg","b02/b02.holder06.B8.arka.svg","b02/b02.holder06.B9.arka.svg",
+    "b03/b03.holder06.B10.arka.svg","b03/b03.holder06.B11.arka.svg","b03/b03.holder06.B12.arka.svg","b03/b03.holder06.B13.arka.svg",
+    // ── HOLDER 06 (F-köşe + LM/RM) ───────────────────────
+    "b01/b01.holder06.F1.on.svg","b01/b01.holder06.F6.on.svg",
+    "b02/b02.holder06.F9.on.svg","b03/b03.holder06.F13.on.svg",
+    "b01/b01.holder06.LM.sol.svg",
+    "b01/b01.holder06.RM.sag.svg","b02/b02.holder06.RM.sag.svg","b03/b03.holder06.RM.sag.svg",
+    // ── HOLDER 06 V2 (B-sırası) ───────────────────────────
+    "b01/b01.holder06v2.B1.arka.svg","b01/b01.holder06v2.B2.arka.svg","b01/b01.holder06v2.B3.arka.svg",
+    "b01/b01.holder06v2.B4.arka.svg","b01/b01.holder06v2.B5.arka.svg","b01/b01.holder06v2.B6.arka.svg",
+    "b02/b02.holder06v2.B7.arka.svg","b02/b02.holder06v2.B8.arka.svg","b02/b02.holder06v2.B9.arka.svg",
+    "b03/b03.holder06v2.B10.arka.svg","b03/b03.holder06v2.B11.arka.svg","b03/b03.holder06v2.B12.arka.svg","b03/b03.holder06v2.B13.arka.svg",
+    // ── HOLDER 06 V2 (F-köşe + LM/RM) ────────────────────
+    "b01/b01.holder06v2.F1.on.svg","b03/b03.holder06v2.F13.on.svg",
+    "b01/b01.holder06v2.LM.sol.svg",
+    "b03/b03.holder06v2.RM.sag.svg",
+    // b01/b02.holder06v2.RM.sag.svg — SVG dosyaları henüz yok, eklenince buraya ekle
+    // ── BASE 05 ───────────────────────────────────────────
+    "b01/b01.base05.B2-B3-F2-F3.arka.svg","b01/b01.base05.B3-B4-F3-F4.arka.svg",
+    "b01/b01.base05.B4-B5-F4-F5.arka.svg","b01/b01.base05.B5-B6-F5-F6.arka.svg",
+    "b02/b02.base05.B6-B7-F6-F7.arka.svg","b02/b02.base05.B7-B8-F7-F8.arka.svg","b02/b02.base05.B8-B9-F8-F9.arka.svg",
+    "b03/b03.base05.B9-B10-F9-F10.arka.svg","b03/b03.base05.B10-B11-F10-F11.arka.svg","b03/b03.base05.B11-B12-F11-F12.arka.svg",
+    // ── BASE 06 ───────────────────────────────────────────
+    // Sol uç (tüm baseler için aynı, cascade b01 → b02/b03): dosyayı klasöre ekle → aktif
+    "b01/b01.base06.B1-B5-F1-F5.arka.svg",
+    "b01/b01.base06.B2-B6-F2-F6.arka.svg",
+    "b02/b02.base06.B3-B7-F3-F7.arka.svg","b02/b02.base06.B4-B8-F4-F8.arka.svg","b02/b02.base06.B5-B9-F5-F9.arka.svg",
+    "b03/b03.base06.B6-B10-F6-F10.arka.svg","b03/b03.base06.B7-B11-F7-F11.arka.svg","b03/b03.base06.B8-B12-F8-F12.arka.svg",
+    // B03 sağ uç: dosyayı klasöre ekle → aktif
+    "b03/b03.base06.B9-B13-F9-F13.arka.svg",
+]);
+
+// ════════════════════════════════════════════════════════════
+// NODE YARDIMCILARI
+// ════════════════════════════════════════════════════════════
+function parseNode(id) {
+    if (id === "LM") return { row: "M", col: 0 };
+    if (id === "RM") return { row: "M", col: 99 };
+    return { row: id[0], col: parseInt(id.slice(1)) };
+}
+
+function maxCol() {
+    return seciliBase === 'b01' ? 6 : seciliBase === 'b02' ? 9 : 13;
+}
+
+// Köşe footprint'lerini çöz
+function resolveCornerNodes(type) {
+    const mc = maxCol();
+    if (type === "left-corner")  return ["B1", "LM", "F1"];
+    if (type === "right-corner") return [`B${mc}`, "RM", `F${mc}`];
+    return null;
+}
+
+// Standart footprint'ten node ID listesi üret
+// dRow değerleri: "same" (tıklanan sıra), "other" (karşı sıra), "B" (mutlak), "F" (mutlak)
+function footprintToNodeIds(clickedId, footprint) {
+    if (typeof footprint === "string") return resolveCornerNodes(footprint);
+    const { row, col } = parseNode(clickedId);
+    // LM/RM node'ları sadece tek-node same-row footprint destekler
+    if (row === "M") {
+        if (footprint.length === 1 && footprint[0].dCol === 0 && footprint[0].dRow === "same")
+            return [clickedId];
+        return null;
+    }
+    const ids = [];
+    for (const { dCol, dRow } of footprint) {
+        let newRow;
+        if      (dRow === "same")  newRow = row;
+        else if (dRow === "other") newRow = (row === "B" ? "F" : "B");
+        else                       newRow = dRow;  // "B" veya "F" (mutlak)
+        const newCol = col + dCol;
+        if (newCol < 1 || newCol > maxCol()) return null;
+        ids.push(newRow + newCol);
+    }
+    return ids;
+}
+
+function nodeVarMi(id) {
+    return document.querySelector(`#nodes-${seciliBase} [data-id="${id}"]`) !== null;
+}
+
+function ayakNodeMu(id) {
+    return (AYAK_NODELAR[seciliBase]?.[ayakPozisyonu] ?? []).includes(id);
+}
+
+function nodeMusaitMi(id) {
+    if (ayakNodeMu(id)) return false;
+    return !takiliParcalar.some(p => p.kapladigiNodelar.includes(id));
+}
+
+// ════════════════════════════════════════════════════════════
+// BASE SEÇİMİ
+// ════════════════════════════════════════════════════════════
+function baseSecimiYap(baseId, btn) {
+    seciliBase = baseId;
+    document.querySelectorAll('.sel-btn:not(.ayak-dis):not(.ayak-ic)').forEach(b => b.classList.remove('aktif'));
+    btn.classList.add('aktif');
+    // Node grupları
+    ['b01','b02','b03'].forEach(id => {
+        document.getElementById('nodes-' + id).style.display = id === baseId ? '' : 'none';
+    });
+    // Node kılavuzu (src JS'de atanır, HTML'de boş)
+    const num = baseId.slice(-1);
+    document.getElementById('guide-layer').src = `BASE0${num}-NODE.svg`;
+    // Aksesuarları sıfırla, ayakları yeniden uygula
+    sifirla();
+    surfaceSVGyukle();
+    baseSVGyukle();
+    ayakNodelariniUygula();
+    ozetGuncelle();
+    planCiz();
+}
+
+// ════════════════════════════════════════════════════════════
+// AYAK SEÇİMİ
+// ════════════════════════════════════════════════════════════
+function ayakSecimiYap(pozisyon, btn) {
+    ayakPozisyonu = pozisyon;
+    document.querySelectorAll('.ayak-dis, .ayak-ic').forEach(b => b.classList.remove('aktif'));
+    btn.classList.add('aktif');
+    // Aksesuarları sıfırla
+    sifirla();
+    baseSVGyukle();
+    ayakNodelariniUygula();
+    ozetGuncelle();
+    planCiz();
+}
+
+// Masa yüzeyi (BASE-01.svg) — daima görünür, ayak pozisyonundan bağımsız
+function surfaceSVGyukle() {
+    const dosya = BASE_SURFACE_MAP[seciliBase];
+    const el = document.getElementById('surface-layer');
+    el.removeAttribute('src');
+    if (dosya) el.src = dosya;
+}
+
+// Ayak SVG'si — pozisyona göre değişir
+function baseSVGyukle() {
+    const dosya = BASE_SVG_MAP[seciliBase]?.[ayakPozisyonu];
+    const el = document.getElementById('base-layer');
+    el.removeAttribute('src');
+    if (dosya) el.src = dosya;
+}
+
+// ════════════════════════════════════════════════════════════
+// AYAK NODE'LARINI İŞARETLE
+// ════════════════════════════════════════════════════════════
+function ayakNodelariniUygula() {
+    // Önce tüm ayak sınıflarını temizle
+    document.querySelectorAll('.hotspot').forEach(h => {
+        h.classList.remove('ayak-dis-node', 'ayak-ic-node');
+    });
+    const sinif = `ayak-${ayakPozisyonu}-node`;
+    const nodeIdler = AYAK_NODELAR[seciliBase]?.[ayakPozisyonu] ?? [];
+    nodeIdler.forEach(id => {
+        document.querySelectorAll(`#nodes-${seciliBase} [data-id="${id}"]`).forEach(h => {
+            h.classList.add(sinif);
+        });
+    });
+    // Plan canvas'da ayak bilgisi göster
+    const label = document.getElementById('ayak-durum-label');
+    if (label) label.textContent = ayakPozisyonu === 'dis' ? '🔴 Ayak dışta' : '🟡 Ayak içte';
+}
+
+// ════════════════════════════════════════════════════════════
+// SIFIRLAMA (aksesuar temizle, node state temizle)
+// ════════════════════════════════════════════════════════════
+function sifirla() {
+    takiliParcalar.forEach(p => { if (p.blobUrl) URL.revokeObjectURL(p.blobUrl); });
+    document.querySelectorAll('.aksesuar-layer').forEach(el => el.remove());
+    takiliParcalar = [];
+    document.querySelectorAll('.hotspot').forEach(h => h.classList.remove('dolu'));
+}
+
+// ════════════════════════════════════════════════════════════
+// TOAST & HAPTIC
+// ════════════════════════════════════════════════════════════
+let _toastTimer = null;
+function toastGoster(mesaj, ikon = 'ℹ️', sure = 2200) {
+    const el  = document.getElementById('toast');
+    const ico = document.getElementById('toast-icon');
+    const msg = document.getElementById('toast-mesaj');
+    ico.textContent = ikon;
+    msg.textContent = mesaj;
+    el.classList.add('gorunu');
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => el.classList.remove('gorunu'), sure);
+}
+function haptic(ms = 8) {
+    if (navigator.vibrate) navigator.vibrate(ms);
+}
+
+// ════════════════════════════════════════════════════════════
+// KALDIR MODALİ
+// ════════════════════════════════════════════════════════════
+let _kaldirHedef = null;
+function kaldirModal(parca) {
+    _kaldirHedef = parca;
+    document.getElementById('kaldir-urun-adi').textContent = URUN_KATALOGU[parca.urunId].ad;
+    document.getElementById('kaldir-modal').classList.add('acik');
+}
+function kaldirIptal() {
+    _kaldirHedef = null;
+    document.getElementById('kaldir-modal').classList.remove('acik');
+}
+function kaldirOnayla() {
+    if (_kaldirHedef) { parcaKaldir(_kaldirHedef); _kaldirHedef = null; }
+    document.getElementById('kaldir-modal').classList.remove('acik');
+}
+
+// ════════════════════════════════════════════════════════════
+// ONBOARDING
+// ════════════════════════════════════════════════════════════
+let onboardingAktif = true;
+function onboardingKapat() {
+    if (!onboardingAktif) return;
+    onboardingAktif = false;
+    const el = document.getElementById('onboarding');
+    if (!el) return;
+    el.classList.add('gizli');
+    el.addEventListener('transitionend', () => {
+        el.remove();
+        // Onboarding gittikten sonra alıntı yavaşça belirir
+        setTimeout(() => {
+            const q = document.getElementById('quote-overlay');
+            if (q) q.classList.add('gorunu');
+        }, 120);
+    }, { once: true });
+}
+
+// ════════════════════════════════════════════════════════════
+// NODE'A TIKLANINCA
+// ════════════════════════════════════════════════════════════
+function nodeaTikla(node) {
+    onboardingKapat();
+    menuKapat();
+    haptic(6);
+    aktifNode = node;
+    const nodeId = node.getAttribute('data-id');
+
+    // Dolu node → custom kaldırma modali
+    if (node.classList.contains('dolu')) {
+        const sahip = takiliParcalar.find(p => p.kapladigiNodelar.includes(nodeId));
+        if (sahip) kaldirModal(sahip);
+        aktifNode = null;
+        return;
+    }
+
+    // Ayak node'u → ayakOrtagi ürün sığıyorsa menü aç, yoksa bilgi toast'u
+    if (ayakNodeMu(nodeId)) {
+        const izinliYonler = node.getAttribute('data-yonler').split(',').map(s => s.trim());
+        const uygunlar = hangiUrunlerUyar(nodeId, izinliYonler);
+        if (uygunlar.length) {
+            menuAc(uygunlar, node);
+        } else {
+            haptic([8, 60, 8]);
+            toastGoster('Bu ayak noktasına aksesuar eklenemiyor', '🔒');
+            aktifNode = null;
+        }
+        return;
+    }
+
+    const izinliYonler = node.getAttribute('data-yonler').split(',').map(s => s.trim());
+    const uygunlar = hangiUrunlerUyar(nodeId, izinliYonler);
+
+    if (!uygunlar.length) {
+        haptic([8, 60, 8]);
+        node.style.fill = 'rgba(255,80,80,0.18)';
+        setTimeout(() => { node.style.fill = ''; }, 380);
+        toastGoster('Bu noktaya şu an aksesuar eklenemiyor', '↔️');
+        aktifNode = null;
+        return;
+    }
+
+    menuAc(uygunlar, node);
+}
+
+// ════════════════════════════════════════════════════════════
+// ÇAKIŞMA & UYGUNLUK KONTROLÜ
+// ════════════════════════════════════════════════════════════
+
+// gap:1 olan holderlar arasında 1-node boşluk kontrolü
+function gapIhlalVar(hedefler) {
+    return hedefler.some(nodeId => {
+        const { row, col } = parseNode(nodeId);
+        if (row === "M") return false;
+        for (const d of [-1, 1]) {
+            const neighborId = row + (col + d);
+            if (!nodeVarMi(neighborId)) continue;
+            if (takiliParcalar.some(p =>
+                p.kapladigiNodelar.includes(neighborId) &&
+                (URUN_KATALOGU[p.urunId]?.gap ?? 0) > 0
+            )) return true;
+        }
+        return false;
+    });
+}
+
+function hangiUrunlerUyar(nodeId, izinliYonler) {
+    const uygunlar = [];
+    const { row } = parseNode(nodeId);
+
+    for (const [urunId, urun] of Object.entries(URUN_KATALOGU)) {
+
+        // triggerRow: sadece belirli sıra tıklandığında göster
+        if (urun.triggerRow && urun.triggerRow !== row) continue;
+
+        // cornerFront: yalnızca mevcut base'in sol veya sağ köşe F node'larında göster
+        if (urun.cornerFront) {
+            const mc = maxCol();
+            if (nodeId !== 'F1' && nodeId !== `F${mc}`) continue;
+        }
+
+        // triggerNodes kontrolü
+        if (urun.triggerNodes && !urun.triggerNodes.includes(nodeId)) {
+            if (urunId === "holder05-sag-kose") {
+                const mc = maxCol();
+                const sagKose = [`B${mc}`, "RM", `F${mc}`];
+                if (!sagKose.includes(nodeId)) continue;
+            } else {
+                continue;
+            }
+        }
+
+        // LM → B1 anchor: LM düğmesinden tetiklenebilecek ürünler footprint'i B1'den hesaplar
+        const anchorId = (nodeId === 'LM' && urun.lmAnchor) ? 'B1' : nodeId;
+        const checkYonler = anchorId !== nodeId ? ['on','sol','sag','arka'] : izinliYonler;
+
+        // Yön uyumu
+        const ortakYon = urun.yonler.find(y => checkYonler.includes(y));
+        if (!ortakYon) continue;
+
+        // Ana footprint node listesi (dosya adında kullanılır)
+        const hedefler = footprintToNodeIds(anchorId, urun.footprint);
+        if (!hedefler) continue;
+
+        // ekFootprint: dosya adında geçmez ama alanı bloklar (örn. base06 orta node'ları)
+        const ekRaw = urun.ekFootprint ? footprintToNodeIds(anchorId, urun.ekFootprint) : [];
+        const ekHedefler = ekRaw ?? [];
+        const blockNodelar = [...hedefler, ...ekHedefler];
+
+        // Corner IDs for base06 (only dCol=0 and dCol=4 can overlap legs or adjacent base06)
+        const cornerIds = urunId === 'base06' ? (hedefler) : null; // hedefler IS the corner footprint for base06
+
+        // Uygunluk kontrolü
+        const uygun = blockNodelar.every(id => {
+            if (!nodeVarMi(id)) return false;
+
+            if (urunId === 'base06') {
+                const isCorner = cornerIds && cornerIds.includes(id);
+                if (isCorner) {
+                    // Corner: allow leg overlap OR another base06's corner
+                    if (ayakNodeMu(id)) return true;
+                    const owner = takiliParcalar.find(p => p.kapladigiNodelar.includes(id));
+                    return !owner || owner.urunId === 'base06';
+                } else {
+                    // ekFootprint middle nodes: no leg, no other product
+                    if (ayakNodeMu(id)) return false;
+                    return !takiliParcalar.some(p => p.kapladigiNodelar.includes(id));
+                }
+            }
+
+            // Standard products
+            if (ayakNodeMu(id)) return urun.ayakOrtagi === true;
+            return !takiliParcalar.some(p => p.kapladigiNodelar.includes(id));
+        });
+        if (!uygun) continue;
+
+        // Gap kontrolü: holderlar arasında 1 node boşluk zorunlu
+        if (urun.gap && gapIhlalVar(hedefler)) continue;
+
+        // SVG dosya adı — cascade arama
+        // LM/RM görsel koordinatları base'e özgüdür; yalnızca aktif base kontrol edilir.
+        // B/F node'ları tüm base'lerde aynı koordinattadır; b01→b02→b03 cascade uygulanır.
+        const dosyaId = urun.dosyaId
+            || urunId.replace(/-sol-kose$/, '').replace(/-sag-kose$/, '');
+        const nodeStr = hedefler.join('-');
+        // Always try seciliBase first, then fall back to others.
+        // LM is visually identical on all bases (left edge); RM is base-specific but
+        // correct SVG will be found first via seciliBase prefix.
+        const others = ['b01', 'b02', 'b03'].filter(b => b !== seciliBase);
+        // RM koordinatı her base'de farklıdır — cascade kullanma, sadece aktif base'i dene.
+        // LM tüm base'lerde aynı koordinatta olduğundan cascade güvenlidir.
+        const baseCandidates = nodeId === 'RM' ? [seciliBase] : [seciliBase, ...others];
+        let dosyaAdi = null, dosyaBase = null;
+        for (const bp of baseCandidates) {
+            const candidate = `${bp}/${bp}.${dosyaId}.${nodeStr}.${ortakYon}.svg`;
+            if (MEVCUT_SVGLER.has(candidate)) { dosyaAdi = candidate; dosyaBase = bp; break; }
+        }
+        if (!dosyaAdi) continue;
+
+        uygunlar.push({ urunId, yon: ortakYon, kapladigiNodelar: blockNodelar, dosyaId, dosyaBase, dosyaNodeStr: nodeStr, ...urun });
+    }
+    return uygunlar;
+}
+
+// ════════════════════════════════════════════════════════════
+// MENÜ  — desktop: tooltip konumu | mobile: bottom sheet
+// ════════════════════════════════════════════════════════════
+function menuAc(uygunlar, node) {
+    const menu     = document.getElementById('selection-menu');
+    const liste    = document.getElementById('secenekler-listesi');
+    const backdrop = document.getElementById('menu-backdrop');
+    liste.innerHTML = '';
+
+    uygunlar.forEach(urun => {
+        const btn = document.createElement('button');
+        btn.className = 'urun-secenegi';
+        btn.innerHTML = `<span class="urun-dot" style="background:${urun.renk}"></span>
+                         <span>${urun.ad}</span>
+                         <span class="urun-badge">${urun.boyut}</span>`;
+        btn.onclick = () => { parcaEkle(urun); menuKapat(); };
+        liste.appendChild(btn);
+    });
+
+    if (window.innerWidth <= 768) {
+        // Bottom sheet: clear inline position overrides, let CSS take over
+        menu.style.removeProperty('left');
+        menu.style.removeProperty('top');
+        menu.style.display = 'block';
+        backdrop.classList.add('aktif');
+        requestAnimationFrame(() => menu.classList.add('acik'));
+    } else {
+        menu.classList.remove('acik');
+        const svgEl = node.closest('svg');
+        const rect  = svgEl.getBoundingClientRect();
+        const cx    = parseFloat(node.getAttribute('cx'));
+        const cy    = parseFloat(node.getAttribute('cy'));
+        const sx    = rect.left + cx * (rect.width  / 1920) + 30;
+        const sy    = rect.top  + cy * (rect.height / 1080) - 20;
+        menu.style.left = Math.min(sx, window.innerWidth  - 235) + 'px';
+        menu.style.top  = Math.min(sy, window.innerHeight - 240) + 'px';
+        menu.style.display = 'block';
+        requestAnimationFrame(() => menu.classList.add('acik'));
+    }
+}
+
+function menuKapat() {
+    const menu     = document.getElementById('selection-menu');
+    const backdrop = document.getElementById('menu-backdrop');
+    menu.classList.remove('acik');
+    backdrop.classList.remove('aktif');
+    setTimeout(() => { if (!menu.classList.contains('acik')) menu.style.display = 'none'; }, 340);
+    aktifNode = null;
+}
+
+document.addEventListener('click', e => {
+    if (!document.getElementById('selection-menu').contains(e.target) &&
+        !e.target.closest('#node-layer')) menuKapat();
+});
+
+// ════════════════════════════════════════════════════════════
+// PARÇA EKLEME
+// Dosya adı: b01.holder05.B2-B3-B4.arka.svg
+//            b01.holder05-sol-kose.B1-LM-F1.sol.svg  ← köşe
+// bgFill:true olan ürünler için SVG'nin fill="none" path'leri
+// raf rengiyle doldurulur — böylece sadece objenin şekli kaplı olur,
+// tüm canvas değil.
+// ════════════════════════════════════════════════════════════
+async function parcaEkle(urun) {
+    const node     = aktifNode;
+    const z        = urun.zIndex !== undefined ? urun.zIndex : parseInt(node.getAttribute('data-z'));
+    const nodesStr = urun.dosyaNodeStr || urun.kapladigiNodelar.join('-');
+    const dosyaId  = urun.dosyaId
+        || urun.urunId.replace(/-sol-kose$/, '').replace(/-sag-kose$/, '');
+    const basePrefix = urun.dosyaBase || seciliBase;
+    const dosyaAdi   = `${basePrefix}.${dosyaId}.${nodesStr}.${urun.yon}.svg`;
+
+    const img = document.createElement('img');
+    img.className    = 'layer aksesuar-layer enter';
+    img.style.zIndex = z;
+    img.id           = `aksesuar-${Date.now()}`;
+    img.alt          = urun.ad;
+
+    let blobUrl = null;
+    if (urun.bgFill) {
+        try {
+            const r = await fetch(dosyaAdi);
+            let svgText = await r.text();
+            // Replace fill="none" with shelf bg so only the product shape gets filled
+            svgText = svgText.replace(/fill="none"/g, 'fill="#f0ebe5"');
+            const blob = new Blob([svgText], { type: 'image/svg+xml' });
+            blobUrl = URL.createObjectURL(blob);
+            img.src = blobUrl;
+        } catch {
+            img.src = dosyaAdi;
+        }
+    } else {
+        img.src = dosyaAdi;
+    }
+
+    const wrapper = document.getElementById('configurator-wrapper');
+    wrapper.insertBefore(img, document.getElementById('base-layer'));
+
+    takiliParcalar.push({
+        urunId: urun.urunId,
+        yon: urun.yon,
+        kapladigiNodelar: urun.kapladigiNodelar,
+        imgId: img.id,
+        renk: urun.renk,
+        blobUrl,
+    });
+
+    urun.kapladigiNodelar.forEach(id => {
+        document.querySelectorAll(`#nodes-${seciliBase} [data-id="${id}"]`).forEach(h => h.classList.add('dolu'));
+    });
+
+    ozetGuncelle();
+    planCiz();
+}
+
+// ════════════════════════════════════════════════════════════
+// PARÇA KALDIRMA
+// ════════════════════════════════════════════════════════════
+function parcaKaldir(kayit) {
+    const el = document.getElementById(kayit.imgId);
+    if (el) {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-10px) scale(0.97)';
+        setTimeout(() => el.remove(), 200);
+    }
+    if (kayit.blobUrl) URL.revokeObjectURL(kayit.blobUrl);
+    kayit.kapladigiNodelar.forEach(id => {
+        if (!takiliParcalar.some(p => p !== kayit && p.kapladigiNodelar.includes(id))) {
+            document.querySelectorAll(`#nodes-${seciliBase} [data-id="${id}"]`).forEach(h => h.classList.remove('dolu'));
+        }
+    });
+    takiliParcalar = takiliParcalar.filter(p => p !== kayit);
+    ozetGuncelle();
+    planCiz();
+}
+
+function hepsiniTemizle() {
+    if (!takiliParcalar.length) return;
+    sifirla();
+    ayakNodelariniUygula();
+    ozetGuncelle();
+    planCiz();
+}
+
+// ════════════════════════════════════════════════════════════
+// ÖZET LİSTESİ
+// ════════════════════════════════════════════════════════════
+function ozetGuncelle() {
+    const el     = document.getElementById('ozet-listesi');
+    const toplam = document.getElementById('toplam-sayi');
+    if (!takiliParcalar.length) {
+        el.innerHTML = '<div class="ozet-bos">Henüz aksesuar eklenmedi</div>';
+        toplam.textContent = '0 parça';
+        return;
+    }
+    const gruplar = {};
+    takiliParcalar.forEach(p => {
+        if (!gruplar[p.urunId]) gruplar[p.urunId] = [];
+        gruplar[p.urunId].push(p);
+    });
+    el.innerHTML = Object.entries(gruplar).map(([urunId, liste]) => {
+        const urun = URUN_KATALOGU[urunId];
+        const ids  = liste.map(p => p.imgId).join('|');
+        return `<div class="ozet-satir">
+            <div class="ozet-sol">
+                <span class="ozet-renk" style="background:${urun.renk}"></span>
+                <span class="ozet-ad">${urun.ad}</span>
+            </div>
+            <span class="ozet-adet">${liste.length}×</span>
+            <button class="ozet-x" onclick="grupKaldir('${ids}')">×</button>
+        </div>`;
+    }).join('');
+    toplam.textContent = takiliParcalar.length + ' parça';
+}
+
+function grupKaldir(idsStr) {
+    idsStr.split('|').forEach(imgId => {
+        const kayit = takiliParcalar.find(p => p.imgId === imgId);
+        if (kayit) parcaKaldir(kayit);
+    });
+}
+
+
+// ════════════════════════════════════════════════════════════
+// NASIL KULLANILIR MODALİ
+// ════════════════════════════════════════════════════════════
+function helpAc()    { document.getElementById('help-modal').classList.add('acik'); }
+function helpKapat() { document.getElementById('help-modal').classList.remove('acik'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') helpKapat(); });
+
+// ════════════════════════════════════════════════════════════
+// 2D PLAN CANVAS
+// LM ve RM her biri 1 "slot" alır; B/F sırası mc slot alır.
+// Toplam: mc+2 slot → hepsi W içinde kalır.
+// ════════════════════════════════════════════════════════════
+function planCiz() {
+    const canvas = document.getElementById('plan-canvas');
+    const ctx    = canvas.getContext('2d');
+
+    // DPR-aware: canvas piksel sayısını CSS boyutu × ekran yoğunluğuna eşitle
+    const dpr  = window.devicePixelRatio || 1;
+    const cssW = canvas.clientWidth  || 320;
+    const cssH = canvas.clientHeight || 190;
+    const pxW  = Math.round(cssW * dpr);
+    const pxH  = Math.round(cssH * dpr);
+    if (canvas.width !== pxW || canvas.height !== pxH) {
+        canvas.width  = pxW;
+        canvas.height = pxH;
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);   // sıfırla + ölçekle
+
+    const W = cssW, H = cssH;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#0a0a0a';
+    ctx.fillRect(0, 0, W, H);
+
+    const mc      = maxCol();
+    const pad     = 10;
+    const labelH  = 14;
+
+    // Slot genişliği: LM + mc×col + RM → toplam (mc+2) slot
+    const slotW = (W - 2 * pad) / (mc + 2);
+    const cell  = slotW;   // kare hücreler
+    const offX  = pad + slotW;        // B/F ızgarası buradan başlar
+    const offY  = pad + labelH;       // üst etiketten sonra
+
+    // LM / RM merkez X
+    const lmCx  = pad + slotW * 0.5;
+    const rmCx  = W  - pad - slotW * 0.5;
+    // LM / RM merkez Y: B ile F satırları arasında tam orta
+    const midCy = offY + (1.2 + 0.5) * cell;
+    const sideR = Math.max(7, slotW * 0.38);
+
+    const doluMap = {};
+    takiliParcalar.forEach(p => p.kapladigiNodelar.forEach(id => { doluMap[id] = p.renk; }));
+    const ayaklar = new Set(AYAK_NODELAR[seciliBase]?.[ayakPozisyonu] ?? []);
+    const ayakRenk = ayakPozisyonu === 'dis' ? '#FF7A45' : '#F0C040';
+
+    // B ve F satırları
+    [['B', 0], ['F', 2.4]].forEach(([row, ri]) => {
+        for (let col = 1; col <= mc; col++) {
+            const id = row + col;
+            const px = offX + (col - 1) * cell;
+            const py = offY + ri * cell;
+            const isAyak = ayaklar.has(id);
+            const isDolu = doluMap[id];
+
+            ctx.beginPath();
+            ctx.roundRect(px + 1.5, py + 1.5, cell - 3, cell - 3, 3);
+            ctx.fillStyle   = isAyak ? ayakRenk + '14' : isDolu ? isDolu + '30' : '#1c1c1c';
+            ctx.strokeStyle = isAyak ? ayakRenk + '50' : isDolu ? isDolu + '90' : '#2c2c2c';
+            ctx.lineWidth   = isAyak ? 1 : 1;
+            ctx.fill(); ctx.stroke();
+
+            if (isDolu && !isAyak) {
+                ctx.beginPath();
+                ctx.arc(px + cell/2, py + cell/2, cell * 0.2, 0, Math.PI * 2);
+                ctx.fillStyle = isDolu;
+                ctx.fill();
+            }
+
+            const lbl = isAyak ? 'A' : id;
+            ctx.fillStyle = isAyak ? ayakRenk + 'aa' : isDolu ? '#ffffff66' : '#4a4a48';
+            ctx.font = `${isAyak ? 'bold ' : ''}${Math.max(6, Math.floor(cell * 0.28))}px Inter,sans-serif`;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(lbl, px + cell/2, py + cell/2);
+        }
+    });
+
+    // LM ve RM daireleri
+    ['LM', 'RM'].forEach(id => {
+        const cx    = id === 'LM' ? lmCx : rmCx;
+        const isAyak = ayaklar.has(id);
+        const isDolu = doluMap[id];
+        ctx.beginPath();
+        ctx.arc(cx, midCy, sideR, 0, Math.PI * 2);
+        ctx.fillStyle   = isAyak ? ayakRenk + '14' : isDolu ? isDolu + '30' : '#1e1e1e';
+        ctx.strokeStyle = isAyak ? ayakRenk + '60' : isDolu ? isDolu       : '#2e2e2e';
+        ctx.lineWidth   = 1;
+        ctx.fill(); ctx.stroke();
+        const lbl = isAyak ? 'A' : id;
+        ctx.fillStyle = isAyak ? ayakRenk + 'aa' : '#5a5a58';
+        ctx.font = `${isAyak ? 'bold ' : ''}${Math.max(6, Math.floor(slotW * 0.28))}px Inter,sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(lbl, cx, midCy);
+    });
+
+    // Etiketler
+    ctx.fillStyle = '#5a5a58'; ctx.font = '8px Inter,sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';    ctx.fillText('B arka', offX, 2);
+    ctx.textBaseline = 'bottom'; ctx.fillText('F ön',   offX, H - 2);
+}
+
+// ════════════════════════════════════════════════════════════
+// TASARIM PAYLAŞ / İNDİR  (html2canvas + Web Share API)
+// ════════════════════════════════════════════════════════════
+const _isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+async function shareDesign() {
+    if (typeof html2canvas === 'undefined') {
+        toastGoster('Ekran aracı henüz yüklenmedi, tekrar dene', '⚠️', 3000);
+        return;
+    }
+
+    const btn = document.getElementById('share-btn');
+    btn.classList.add('yukleniyor');
+    btn.innerHTML = '<span style="font-size:11px">Hazırlanıyor…</span>';
+
+    try {
+        const captureEl = document.getElementById('main-layout');
+        const canvas = await html2canvas(captureEl, {
+            backgroundColor: '#0a0a0a',
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            ignoreElements: el => el.id === 'guide-layer' || el.id === 'node-layer',
+        });
+
+        const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+        const file = new File([blob], 'packt-design.png', { type: 'image/png' });
+
+        // Mobil: Web Share API — masaüstü: her zaman direkt indir
+        if (_isMobile && navigator.share && navigator.canShare?.({ files: [file] })) {
+            await navigator.share({
+                title: 'Packt Masa Tasarımım',
+                text: 'Packt Configurator ile oluşturduğum masa tasarımı → thepackt.co',
+                files: [file],
+            });
+        } else {
+            const url = URL.createObjectURL(blob);
+            const a   = document.createElement('a');
+            a.href    = url;
+            a.download = 'packt-design.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            toastGoster('Tasarım indirildi ↓', '✓', 2500);
+        }
+    } catch (err) {
+        if (err.name !== 'AbortError') {
+            console.error('Paylaşım hatası:', err);
+            toastGoster('Bir sorun oluştu, tekrar dene', '⚠️', 3000);
+        }
+    } finally {
+        btn.classList.remove('yukleniyor');
+        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+            <polyline points="16 6 12 2 8 6"/>
+            <line x1="12" y1="2" x2="12" y2="15"/>
+        </svg>Paylaş`;
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// BAŞLANGIÇ
+// ════════════════════════════════════════════════════════════
+surfaceSVGyukle();
+baseSVGyukle();
+ayakNodelariniUygula();
+ozetGuncelle();
+planCiz();
+</script>
+</body>
+</html>
