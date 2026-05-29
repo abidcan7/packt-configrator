@@ -1282,11 +1282,37 @@ function ayakSecimiYap(pozisyon, btn) {
 }
 
 // Masa yüzeyi (BASE-01.svg) — daima görünür, ayak pozisyonundan bağımsız
+// iOS Safari'nin SVG'leri html2canvas'ta boş çizmesini engelleyen sihirli fonksiyon
+async function loadSvgSafe(imgElement, svgUrl, isBgFill = false) {
+    try {
+        const response = await fetch(svgUrl);
+        let svgText = await response.text();
+
+        // 1. Safari'nin en büyük takıntısı: width ve height yoksa resmi 0x0 piksel çizer.
+        if (!svgText.match(/width=["']/)) {
+            svgText = svgText.replace('<svg ', '<svg width="1920" height="1080" ');
+        }
+
+        // 2. Eğer aksesuar için bgFill (raf rengi doldurma) istenmişse onu yap
+        if (isBgFill) {
+            svgText = svgText.replace(/fill="none"/g, 'fill="#f0ebe5"');
+        }
+
+        // 3. Safari'nin güvenlik engelini aşmak için dosyayı şifreli Base64 koduna çeviriyoruz
+        const base64 = btoa(unescape(encodeURIComponent(svgText)));
+        imgElement.src = 'data:image/svg+xml;base64,' + base64;
+    } catch (err) {
+        // Fetch başarısız olursa (CORS vb) klasik yöntemle yükle
+        imgElement.src = svgUrl;
+    }
+}
+
+// Masa yüzeyi (BASE-01.svg) — daima görünür, ayak pozisyonundan bağımsız
 function surfaceSVGyukle() {
     const dosya = BASE_SURFACE_MAP[seciliBase];
     const el = document.getElementById('surface-layer');
     el.removeAttribute('src');
-    if (dosya) el.src = dosya;
+    if (dosya) loadSvgSafe(el, dosya);
 }
 
 // Ayak SVG'si — pozisyona göre değişir
@@ -1294,9 +1320,8 @@ function baseSVGyukle() {
     const dosya = BASE_SVG_MAP[seciliBase]?.[ayakPozisyonu];
     const el = document.getElementById('base-layer');
     el.removeAttribute('src');
-    if (dosya) el.src = dosya;
+    if (dosya) loadSvgSafe(el, dosya);
 }
-
 // ════════════════════════════════════════════════════════════
 // AYAK NODE'LARINI İŞARETLE
 // ════════════════════════════════════════════════════════════
@@ -1631,6 +1656,7 @@ document.addEventListener('click', e => {
 // raf rengiyle doldurulur — böylece sadece objenin şekli kaplı olur,
 // tüm canvas değil.
 // ════════════════════════════════════════════════════════════
+// PARÇA EKLEME
 async function parcaEkle(urun) {
     const node     = aktifNode;
     const z        = urun.zIndex !== undefined ? urun.zIndex : parseInt(node.getAttribute('data-z'));
@@ -1646,26 +1672,11 @@ async function parcaEkle(urun) {
     img.id           = `aksesuar-${Date.now()}`;
     img.alt          = urun.ad;
 
-    let blobUrl = null;
-    if (urun.bgFill) {
-        try {
-            const r = await fetch(dosyaAdi);
-            let svgText = await r.text();
-            // Replace fill="none" with shelf bg so only the product shape gets filled
-            svgText = svgText.replace(/fill="none"/g, 'fill="#f0ebe5"');
-            
-            // iOS Blob desteklemediği için Base64 formatına çeviriyoruz:
-            const base64 = btoa(unescape(encodeURIComponent(svgText)));
-            img.src = 'data:image/svg+xml;base64,' + base64;
-        } catch {
-            img.src = dosyaAdi;
-        }
-    } else {
-        img.src = dosyaAdi;
-    }
-
     const wrapper = document.getElementById('configurator-wrapper');
     wrapper.insertBefore(img, document.getElementById('base-layer'));
+
+    // Bütün aksesuarları GÜVENLİ yöntemle yükle
+    loadSvgSafe(img, dosyaAdi, urun.bgFill);
 
     takiliParcalar.push({
         urunId: urun.urunId,
@@ -1673,7 +1684,7 @@ async function parcaEkle(urun) {
         kapladigiNodelar: urun.kapladigiNodelar,
         imgId: img.id,
         renk: urun.renk,
-        blobUrl,
+        blobUrl: null // Artık blobUrl kullanmadığımız için null geçiyoruz
     });
 
     urun.kapladigiNodelar.forEach(id => {
@@ -1683,7 +1694,6 @@ async function parcaEkle(urun) {
     ozetGuncelle();
     planCiz();
 }
-
 // ════════════════════════════════════════════════════════════
 // PARÇA KALDIRMA
 // ════════════════════════════════════════════════════════════
