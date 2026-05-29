@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Packt masanı kendin tasarla — aksesuar ekle, konfigürasyonunu paylaş.">
+    <meta name="theme-color" content="#0c0b0a">
     <title>Packt Configurator</title>
+    <link rel="preload" href="packt-logo.svg" as="image" type="image/svg+xml">
+    <link rel="preload" href="BASE-01.svg"    as="image" type="image/svg+xml">
+    <link rel="preload" href="BASE-01-AYAK-DISTA-B1-LM-F1-B6-RM-F6.svg" as="image" type="image/svg+xml">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
     <style>
         :root {
@@ -324,6 +329,10 @@
         .urun-secenegi:hover { background: rgba(51,49,50,0.06); }
         .urun-secenegi:active { transform: scale(0.98); }
         .urun-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .urun-ikon {
+            width: 32px; height: 32px; object-fit: contain; flex-shrink: 0;
+            border-radius: 6px; background: rgba(51,49,50,0.05); padding: 3px;
+        }
         .urun-badge {
             font-size: 10px; background: rgba(51,49,50,0.08); color: rgba(51,49,50,0.45);
             padding: 2px 6px; border-radius: 4px; margin-left: auto; font-weight: 400;
@@ -596,14 +605,14 @@
 <!-- SELEKTÖRLER: Model + Ayak Pozisyonu -->
 <div id="selectors">
     <div class="selector-label-group">
-        <span class="selector-label sel-label-long">Masa Modeli</span>
-        <span class="selector-label sel-label-short">Model</span>
-        <span class="selector-sublabel">boyutu seçin</span>
+        <span class="selector-label sel-label-long">Plato Modeli</span>
+        <span class="selector-label sel-label-short">Plato</span>
+        <span class="selector-sublabel" id="plato-bilgi">55 cm · 12 nokta</span>
     </div>
     <div class="selector-group">
-        <button class="sel-btn model-btn aktif" onclick="baseSecimiYap('b01',this)" title="Küçük — 6 kolon">B01</button>
-        <button class="sel-btn model-btn"       onclick="baseSecimiYap('b02',this)" title="Orta — 9 kolon">B02</button>
-        <button class="sel-btn model-btn"       onclick="baseSecimiYap('b03',this)" title="Büyük — 13 kolon">B03</button>
+        <button class="sel-btn model-btn aktif" onclick="baseSecimiYap('b01',this)" title="55 cm · 12 nokta">Plato 01</button>
+        <button class="sel-btn model-btn"       onclick="baseSecimiYap('b02',this)" title="85 cm · 18 nokta">Plato 02</button>
+        <button class="sel-btn model-btn"       onclick="baseSecimiYap('b03',this)" title="125 cm · 26 nokta">Plato 03</button>
     </div>
 
     <div class="selector-label-group" style="margin-left:14px">
@@ -780,7 +789,7 @@
             <div class="help-no">1</div>
             <div class="help-icerik">
                 <strong>Masa modelini seç</strong>
-                <span>Üstteki <em>Masa Modeli</em> seçeneğinden masanın boyutunu belirle. B01 küçük, B02 orta, B03 büyük masaya karşılık gelir.</span>
+                <span>Üstteki <em>Plato Modeli</em> seçeneğinden masanın boyutunu belirle. Plato 01 (55 cm), Plato 02 (85 cm), Plato 03 (125 cm).</span>
             </div>
         </div>
         <div class="help-adim">
@@ -893,25 +902,25 @@ const URUN_KATALOGU = {
 
     // ── HOLDER 01: Kontrolcü Standı — tek F-node ──
     "holder01": {
-        ad: "Kontrolcü Standı", boyut: "1 F-node",
+        ad: "Kontrolcü Standı", boyut: "1 F-node", ikon: "ikonlar/stant01.svg",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["on"], renk: "#4A9EFF", triggerRow: "F", gap: 1
     },
     // ── HOLDER 02: Telefon Standı — tek F-node ──
     "holder02": {
-        ad: "Telefon Standı", boyut: "1 F-node",
+        ad: "Telefon Standı", boyut: "1 F-node", ikon: "ikonlar/stant02.svg",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["on"], renk: "#50C878", triggerRow: "F", gap: 1
     },
     // ── HOLDER 03: Tablet Standı — tek F-node ──
     "holder03": {
-        ad: "Tablet Standı", boyut: "1 F-node",
+        ad: "Tablet Standı", boyut: "1 F-node", ikon: "ikonlar/stant03.svg",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["on"], renk: "#B088FF", triggerRow: "F", gap: 1
     },
     // ── HOLDER 04: Laptop Standı · Açık — 3 ardışık F-node ──
     "holder04": {
-        ad: "Laptop Standı · Açık", boyut: "3 F-node",
+        ad: "Laptop Standı · Açık", boyut: "3 F-node", ikon: "ikonlar/stant04.svg",
         footprint: [
             { dCol: 0, dRow: "same" },
             { dCol: 1, dRow: "same" },
@@ -921,7 +930,7 @@ const URUN_KATALOGU = {
     },
     // ── HOLDER 05: Laptop Standı · Kapalı — 3 ardışık B-node ──
     "holder05": {
-        ad: "Laptop Standı · Kapalı", boyut: "3 B-node",
+        ad: "Laptop Standı · Kapalı", boyut: "3 B-node", ikon: "ikonlar/stant05.svg",
         footprint: [
             { dCol: 0, dRow: "same" },
             { dCol: 1, dRow: "same" },
@@ -930,66 +939,66 @@ const URUN_KATALOGU = {
         yonler: ["arka"], renk: "#FFB347", triggerRow: "B", gap: 1
     },
     "holder05-sol-kose": {
-        ad: "Laptop Standı · Kapalı Sol Köşe", boyut: "B1 + LM + F1",
+        ad: "Laptop Standı · Kapalı Sol Köşe", boyut: "B1 + LM + F1", ikon: "ikonlar/stant05.svg",
         footprint: "left-corner",
         yonler: ["sol"], renk: "#FF9A3C",
         triggerNodes: ["B1", "LM", "F1"]
     },
     "holder05-sag-kose": {
-        ad: "Laptop Standı · Kapalı Sağ Köşe", boyut: "B? + RM + F?",
+        ad: "Laptop Standı · Kapalı Sağ Köşe", boyut: "B? + RM + F?", ikon: "ikonlar/stant05.svg",
         footprint: "right-corner",
         yonler: ["sag"], renk: "#FF7A45",
         triggerNodes: ["RM"]
     },
-    // ── HOLDER 06: Kulaklik Standı — tek node ──
+    // ── HOLDER 06: Kulaklık Standı — tek node ──
     "holder06-arka": {
-        ad: "Kulaklik Standı", boyut: "1 B-node",
+        ad: "Kulaklık Standı", boyut: "1 B-node", ikon: "ikonlar/stant06.svg",
         dosyaId: "holder06",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["arka"], renk: "#FF6B6B", triggerRow: "B", gap: 1
     },
     "holder06-on": {
-        ad: "Kulaklik Standı (Köşe Ön)", boyut: "1 F-node",
+        ad: "Kulaklık Standı (Köşe Ön)", boyut: "1 F-node", ikon: "ikonlar/stant06.svg",
         dosyaId: "holder06",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["on"], renk: "#FF6B6B", triggerRow: "F", gap: 1, cornerFront: true
     },
     "holder06-sol": {
-        ad: "Kulaklik Standı Sol", boyut: "LM",
+        ad: "Kulaklık Standı Sol", boyut: "LM", ikon: "ikonlar/stant06.svg",
         dosyaId: "holder06",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["sol"], renk: "#FF6B6B",
         triggerNodes: ["LM"], ayakOrtagi: true
     },
     "holder06-sag": {
-        ad: "Kulaklik Standı Sağ", boyut: "RM",
+        ad: "Kulaklık Standı Sağ", boyut: "RM", ikon: "ikonlar/stant06.svg",
         dosyaId: "holder06",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["sag"], renk: "#FF6B6B",
         triggerNodes: ["RM"], ayakOrtagi: true
     },
-    // ── HOLDER 06 V2: Kulaklik Standı-2 ──
+    // ── HOLDER 06 V2: Kulaklık Standı-2 ──
     "holder06v2-arka": {
-        ad: "Kulaklik Standı-2", boyut: "1 B-node",
+        ad: "Kulaklık Standı-2", boyut: "1 B-node", ikon: "ikonlar/stant06.2.svg",
         dosyaId: "holder06v2",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["arka"], renk: "#FF9966", triggerRow: "B", gap: 1
     },
     "holder06v2-on": {
-        ad: "Kulaklik Standı-2 (Köşe Ön)", boyut: "1 F-node",
+        ad: "Kulaklık Standı-2 (Köşe Ön)", boyut: "1 F-node", ikon: "ikonlar/stant06.2.svg",
         dosyaId: "holder06v2",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["on"], renk: "#FF9966", triggerRow: "F", gap: 1, cornerFront: true
     },
     "holder06v2-sol": {
-        ad: "Kulaklik Standı-2 Sol", boyut: "LM",
+        ad: "Kulaklık Standı-2 Sol", boyut: "LM", ikon: "ikonlar/stant06.2.svg",
         dosyaId: "holder06v2",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["sol"], renk: "#FF9966",
         triggerNodes: ["LM"], ayakOrtagi: true
     },
     "holder06v2-sag": {
-        ad: "Kulaklik Standı-2 Sağ", boyut: "RM",
+        ad: "Kulaklık Standı-2 Sağ", boyut: "RM", ikon: "ikonlar/stant06.2.svg",
         dosyaId: "holder06v2",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["sag"], renk: "#FF9966",
@@ -997,7 +1006,7 @@ const URUN_KATALOGU = {
     },
     // ── BASE 05: Plato · Tepsi S ── 2×2 (B+F, 2 kolon)
     "base05": {
-        ad: "Plato · Tepsi S", boyut: "2 kolon (B+F)",
+        ad: "Plato · Tepsi S", boyut: "2 kolon (B+F)", ikon: "ikonlar/plato05.svg",
         footprint: [
             { dCol: 0, dRow: "B" }, { dCol: 1, dRow: "B" },
             { dCol: 0, dRow: "F" }, { dCol: 1, dRow: "F" }
@@ -1008,7 +1017,7 @@ const URUN_KATALOGU = {
     // ayakOrtagi: köşe node'ları (dCol 0 ve 4) ayaklarla çakışabilir, SVG bunu göze alır.
     // ekFootprint: dosya adında yer almaz ama ara node'lar da bloke edilir.
     "base06": {
-        ad: "Plato · Tepsi M", boyut: "5 kolon (B+F)",
+        ad: "Plato · Tepsi M", boyut: "5 kolon (B+F)", ikon: "ikonlar/plato06.svg",
         footprint: [
             { dCol: 0, dRow: "B" }, { dCol: 4, dRow: "B" },
             { dCol: 0, dRow: "F" }, { dCol: 4, dRow: "F" }
@@ -1172,10 +1181,14 @@ function nodeMusaitMi(id) {
 // ════════════════════════════════════════════════════════════
 // BASE SEÇİMİ
 // ════════════════════════════════════════════════════════════
+const PLATO_BILGI = { b01: '55 cm · 12 nokta', b02: '85 cm · 18 nokta', b03: '125 cm · 26 nokta' };
+
 function baseSecimiYap(baseId, btn) {
     seciliBase = baseId;
     document.querySelectorAll('.sel-btn:not(.ayak-dis):not(.ayak-ic)').forEach(b => b.classList.remove('aktif'));
     btn.classList.add('aktif');
+    const bilgi = document.getElementById('plato-bilgi');
+    if (bilgi) bilgi.textContent = PLATO_BILGI[baseId] || '';
     // Node grupları
     ['b01','b02','b03'].forEach(id => {
         document.getElementById('nodes-' + id).style.display = id === baseId ? '' : 'none';
@@ -1487,7 +1500,10 @@ function menuAc(uygunlar, node) {
     uygunlar.forEach(urun => {
         const btn = document.createElement('button');
         btn.className = 'urun-secenegi';
-        btn.innerHTML = `<span class="urun-dot" style="background:${urun.renk}"></span>
+        const solEleman = urun.ikon
+            ? `<img class="urun-ikon" src="${urun.ikon}" alt="" loading="lazy">`
+            : `<span class="urun-dot" style="background:${urun.renk}"></span>`;
+        btn.innerHTML = `${solEleman}
                          <span>${urun.ad}</span>
                          <span class="urun-badge">${urun.boyut}</span>`;
         btn.onclick = () => { parcaEkle(urun); menuKapat(); };
@@ -1672,7 +1688,15 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') helpKapat();
 // ════════════════════════════════════════════════════════════
 function planCiz() {
     const canvas = document.getElementById('plan-canvas');
-    const ctx    = canvas.getContext('2d');
+    if (!canvas) return;
+
+    // Canvas henüz layout'a yerleşmemişse RAF ile yeniden dene
+    if (canvas.clientWidth === 0) {
+        requestAnimationFrame(planCiz);
+        return;
+    }
+
+    const ctx = canvas.getContext('2d');
 
     // DPR-aware: canvas piksel sayısını CSS boyutu × ekran yoğunluğuna eşitle
     const dpr  = window.devicePixelRatio || 1;
