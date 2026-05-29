@@ -1913,12 +1913,17 @@ async function shareDesign() {
         const hideEls = captureEl.querySelectorAll('#toast, #onboarding, #node-layer, #guide-layer');
         hideEls.forEach(el => el.style.visibility = 'hidden');
 
+        // scale: cihazın piksel yoğunluğuna göre ayarla — görünen büyüklüğü koru
+        const captureScale = Math.min(window.devicePixelRatio || 1, 2);
+
         const canvas = await html2canvas(captureEl, {
             backgroundColor: '#f0ebe3',
-            scale: 2,
+            scale: captureScale,
             useCORS: true,
             allowTaint: true,
             logging: false,
+            width:  captureEl.offsetWidth,
+            height: captureEl.offsetHeight,
             ignoreElements: el => el.id === 'guide-layer' || el.id === 'node-layer',
         });
 
