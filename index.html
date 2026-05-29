@@ -1282,37 +1282,11 @@ function ayakSecimiYap(pozisyon, btn) {
 }
 
 // Masa yüzeyi (BASE-01.svg) — daima görünür, ayak pozisyonundan bağımsız
-// iOS Safari'nin SVG'leri html2canvas'ta boş çizmesini engelleyen sihirli fonksiyon
-async function loadSvgSafe(imgElement, svgUrl, isBgFill = false) {
-    try {
-        const response = await fetch(svgUrl);
-        let svgText = await response.text();
-
-        // 1. Safari'nin en büyük takıntısı: width ve height yoksa resmi 0x0 piksel çizer.
-        if (!svgText.match(/width=["']/)) {
-            svgText = svgText.replace('<svg ', '<svg width="1920" height="1080" ');
-        }
-
-        // 2. Eğer aksesuar için bgFill (raf rengi doldurma) istenmişse onu yap
-        if (isBgFill) {
-            svgText = svgText.replace(/fill="none"/g, 'fill="#f0ebe5"');
-        }
-
-        // 3. Safari'nin güvenlik engelini aşmak için dosyayı şifreli Base64 koduna çeviriyoruz
-        const base64 = btoa(unescape(encodeURIComponent(svgText)));
-        imgElement.src = 'data:image/svg+xml;base64,' + base64;
-    } catch (err) {
-        // Fetch başarısız olursa (CORS vb) klasik yöntemle yükle
-        imgElement.src = svgUrl;
-    }
-}
-
-// Masa yüzeyi (BASE-01.svg) — daima görünür, ayak pozisyonundan bağımsız
 function surfaceSVGyukle() {
     const dosya = BASE_SURFACE_MAP[seciliBase];
     const el = document.getElementById('surface-layer');
     el.removeAttribute('src');
-    if (dosya) loadSvgSafe(el, dosya);
+    if (dosya) el.src = dosya;
 }
 
 // Ayak SVG'si — pozisyona göre değişir
@@ -1320,8 +1294,9 @@ function baseSVGyukle() {
     const dosya = BASE_SVG_MAP[seciliBase]?.[ayakPozisyonu];
     const el = document.getElementById('base-layer');
     el.removeAttribute('src');
-    if (dosya) loadSvgSafe(el, dosya);
+    if (dosya) el.src = dosya;
 }
+
 // ════════════════════════════════════════════════════════════
 // AYAK NODE'LARINI İŞARETLE
 // ════════════════════════════════════════════════════════════
@@ -1656,7 +1631,6 @@ document.addEventListener('click', e => {
 // raf rengiyle doldurulur — böylece sadece objenin şekli kaplı olur,
 // tüm canvas değil.
 // ════════════════════════════════════════════════════════════
-// PARÇA EKLEME
 async function parcaEkle(urun) {
     const node     = aktifNode;
     const z        = urun.zIndex !== undefined ? urun.zIndex : parseInt(node.getAttribute('data-z'));
@@ -1672,11 +1646,25 @@ async function parcaEkle(urun) {
     img.id           = `aksesuar-${Date.now()}`;
     img.alt          = urun.ad;
 
+    let blobUrl = null;
+    if (urun.bgFill) {
+        try {
+            const r = await fetch(dosyaAdi);
+            let svgText = await r.text();
+            // Replace fill="none" with shelf bg so only the product shape gets filled
+            svgText = svgText.replace(/fill="none"/g, 'fill="#f0ebe5"');
+            const blob = new Blob([svgText], { type: 'image/svg+xml' });
+            blobUrl = URL.createObjectURL(blob);
+            img.src = blobUrl;
+        } catch {
+            img.src = dosyaAdi;
+        }
+    } else {
+        img.src = dosyaAdi;
+    }
+
     const wrapper = document.getElementById('configurator-wrapper');
     wrapper.insertBefore(img, document.getElementById('base-layer'));
-
-    // Bütün aksesuarları GÜVENLİ yöntemle yükle
-    loadSvgSafe(img, dosyaAdi, urun.bgFill);
 
     takiliParcalar.push({
         urunId: urun.urunId,
@@ -1684,7 +1672,7 @@ async function parcaEkle(urun) {
         kapladigiNodelar: urun.kapladigiNodelar,
         imgId: img.id,
         renk: urun.renk,
-        blobUrl: null // Artık blobUrl kullanmadığımız için null geçiyoruz
+        blobUrl,
     });
 
     urun.kapladigiNodelar.forEach(id => {
@@ -1694,6 +1682,7 @@ async function parcaEkle(urun) {
     ozetGuncelle();
     planCiz();
 }
+
 // ════════════════════════════════════════════════════════════
 // PARÇA KALDIRMA
 // ════════════════════════════════════════════════════════════
@@ -1887,55 +1876,102 @@ function planCiz() {
 }
 
 // ════════════════════════════════════════════════════════════
-// TASARIM PAYLAŞ / İNDİR (Tüm Cihazlar İçin Ortak Görsel Paylaşımı)
+// TASARIM PAYLAŞ / İNDİR  (html2canvas + Web Share API)
 // ════════════════════════════════════════════════════════════
-async function shareDesign() {
-    if (typeof html2canvas === 'undefined') {
-        toastGoster('Ekran aracı henüz yüklenmedi, tekrar dene', '⚠️', 3000);
-        return;
-    }
+const _isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
+// iOS Safari tespiti: mix-blend-mode on img çalışmıyor, CSS fallback için .ios class'ı ekle
+const _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+               (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+if (_isIOS) document.documentElement.classList.add('ios');
+
+async function shareDesign() {
     const btn = document.getElementById('share-btn');
     btn.classList.add('yukleniyor');
     btn.innerHTML = '<span style="font-size:11px">Hazırlanıyor…</span>';
 
+    // ── iOS: html2canvas SVG'leri yakalayamıyor — URL paylaş ──
+    if (_isIOS) {
+        try {
+            const parcalar = [...new Set(takiliParcalar.map(p => URUN_KATALOGU[p.urunId].ad))];
+            const ozet = parcalar.length ? parcalar.join(', ') : 'henüz aksesuar yok';
+            if (navigator.share) {
+                await navigator.share({
+                    title: 'Packt Masa Tasarımım',
+                    text: `Masa: ${ozet} → thepackt.co`,
+                    url: window.location.href,
+                });
+            } else {
+                toastGoster('Ekran görüntüsü alarak paylaşabilirsin', 'ℹ️', 3000);
+            }
+        } catch(e) {
+            if (e.name !== 'AbortError') toastGoster('Paylaşılamadı, ekran görüntüsü al', '⚠️', 3000);
+        } finally {
+            btn.classList.remove('yukleniyor');
+            btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Paylaş`;
+        }
+        return;
+    }
+
+    // ── Android & Masaüstü: yüksek kalite konfigüratör görüntüsü ──
+    if (typeof html2canvas === 'undefined') {
+        toastGoster('Ekran aracı henüz yüklenmedi, tekrar dene', '⚠️', 3000);
+        btn.classList.remove('yukleniyor');
+        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Paylaş`;
+        return;
+    }
+
     try {
-        // Tüm UI'ı (Masa ve Liste) kapsayan ana kutuyu hedefliyoruz
-        const captureEl = document.getElementById('main-layout') || document.body;
+        const captureEl = document.getElementById('configurator-wrapper');
+
+        // Resimlerin yüklenmesini bekle
+        const imgs = [...captureEl.querySelectorAll('img')];
+        await Promise.all(imgs.map(img =>
+            img.complete ? Promise.resolve()
+                         : new Promise(r => { img.onload = r; img.onerror = r; })
+        ));
+
+        // mix-blend-mode geçici kaldır (html2canvas bunu boş render eder)
+        const blendEls = captureEl.querySelectorAll('#surface-layer, #base-layer, .aksesuar-layer');
+        blendEls.forEach(el => { el.style.mixBlendMode = 'normal'; el.style.opacity = '1'; });
+        const hideEls = captureEl.querySelectorAll('#toast, #onboarding, #node-layer, #guide-layer');
+        hideEls.forEach(el => el.style.visibility = 'hidden');
 
         const canvas = await html2canvas(captureEl, {
-            backgroundColor: '#0c0b0a',
-            scale: window.devicePixelRatio || 2, // Tüm cihazlarda jilet gibi netlik
+            backgroundColor: '#f0ebe3',
+            scale: Math.min(window.devicePixelRatio || 1, 2),
             useCORS: true,
             allowTaint: true,
             logging: false,
-            // Bildirimleri ve menüleri ekran görüntüsünden gizle
-            ignoreElements: el => el.id === 'guide-layer' || el.id === 'toast' || el.id === 'selection-menu'
+            width: captureEl.offsetWidth,
+            height: captureEl.offsetHeight,
+            ignoreElements: el => el.id === 'guide-layer' || el.id === 'node-layer',
         });
 
-        const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
-        const file = new File([blob], 'packt-tasarimim.png', { type: 'image/png' });
+        blendEls.forEach(el => { el.style.mixBlendMode = ''; el.style.opacity = ''; });
+        hideEls.forEach(el => { el.style.visibility = ''; });
 
-        // iOS ve Android için Native Paylaşım Ekranı (Görsel ile birlikte)
-        if (_isMobile && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+        const file = new File([blob], 'packt-design.png', { type: 'image/png' });
+
+        // Mobil: Web Share API — masaüstü: her zaman direkt indir
+        if (_isMobile && navigator.share && navigator.canShare?.({ files: [file] })) {
             await navigator.share({
                 title: 'Packt Masa Tasarımım',
-                text: 'Packt Configurator ile kendi çalışma alanımı tasarladım!',
+                text: 'Packt Configurator ile oluşturduğum masa tasarımı → thepackt.co',
                 files: [file],
             });
         } else {
-            // Masaüstü için direkt indirme
             const url = URL.createObjectURL(blob);
             const a   = document.createElement('a');
             a.href    = url;
-            a.download = 'packt-tasarimim.png';
+            a.download = 'packt-design.png';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             toastGoster('Tasarım indirildi ↓', '✓', 2500);
         }
-
     } catch (err) {
         if (err.name !== 'AbortError') {
             console.error('Paylaşım hatası:', err);
@@ -1950,6 +1986,7 @@ async function shareDesign() {
         </svg>Paylaş`;
     }
 }
+
 // ════════════════════════════════════════════════════════════
 // BAŞLANGIÇ
 // ════════════════════════════════════════════════════════════
