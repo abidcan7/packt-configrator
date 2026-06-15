@@ -2,13 +2,8 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, minimum-scale=1.0">
-    <meta name="description" content="Packt masanı kendin tasarla — aksesuar ekle, konfigürasyonunu paylaş.">
-    <meta name="theme-color" content="#0c0b0a">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Packt Configurator</title>
-    <link rel="preload" href="packt-logo.svg" as="image" type="image/svg+xml">
-    <link rel="preload" href="BASE-01.svg"    as="image" type="image/svg+xml">
-    <link rel="preload" href="BASE-01-AYAK-DISTA-B1-LM-F1-B6-RM-F6.svg" as="image" type="image/svg+xml">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
     <style>
         :root {
@@ -21,26 +16,24 @@
             --packt-tangerine: #f54f36;
             --packt-dark:      #333132;
             --packt-light:     #ededee;
-            /* Dark UI palette */
-            --bg:          #0c0b0a;
-            --surface:     #131210;
-            --surface-2:   #1a1916;
-            --border:      #242220;
-            --border-hover:#363330;
-            --text-primary:  #ededee;
-            --text-secondary:#9a9690;
-            --text-muted:    #625e58;
+            /* Light UI palette */
+            --bg:          #ededee;
+            --surface:     #f8f7f6;
+            --surface-2:   #ffffff;
+            --border:      #d4d1cd;
+            --border-hover:#b0aca6;
+            --text-primary:  #1a1817;
+            --text-secondary:#575350;
+            --text-muted:    #9a9590;
             --accent:        #f54f36;
-            --accent-dim:    rgba(245,79,54,0.12);
-            --accent-dis:    rgba(245,79,54,0.14);
-            --accent-ic:     rgba(240,192,64,0.12);
+            --accent-dim:    rgba(245,79,54,0.10);
+            --accent-dis:    rgba(245,79,54,0.12);
+            --accent-ic:     rgba(240,192,64,0.10);
             /* Scene */
             --scene-bg: #f0ebe3;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { overflow-x: hidden; }
-        body { overflow-x: hidden; }
         body {
             background: var(--bg);
             display: flex;
@@ -59,14 +52,13 @@
             margin-bottom: 18px;
             padding-bottom: 16px;
             border-bottom: 1px solid var(--border);
-            min-width: 0; /* overflow'u engelle */
         }
         #header-logo {
-            display: flex; align-items: center; gap: 12px; min-width: 0; flex-shrink: 1;
+            display: flex; align-items: center; gap: 12px;
         }
         #header-logo img { flex-shrink: 0; }
         #header-wordmark {
-            display: flex; flex-direction: column; gap: 1px; min-width: 0;
+            display: flex; flex-direction: column; gap: 1px;
         }
         #header-brand {
             font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
@@ -76,7 +68,7 @@
             font-size: 9px; font-weight: 500; letter-spacing: 0.18em;
             color: var(--text-muted); text-transform: uppercase;
         }
-        #header-right { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+        #header-right { display: flex; gap: 8px; align-items: center; }
 
         /* ── SELECTÖRler ── */
         #selectors {
@@ -103,7 +95,7 @@
             padding: 6px 13px;
             border: 1px solid var(--border);
             border-radius: 6px;
-            background: rgba(255,255,255,0.03);
+            background: rgba(0,0,0,0.03);
             color: var(--text-secondary);
             cursor: pointer;
             font-size: 11px; font-weight: 500; letter-spacing: 0.03em;
@@ -113,11 +105,11 @@
                         transform 0.1s var(--ease-out-expo);
             will-change: transform;
         }
-        .sel-btn:hover { border-color: var(--border-hover); color: var(--text-primary); background: rgba(255,255,255,0.055); }
+        .sel-btn:hover { border-color: var(--border-hover); color: var(--text-primary); background: rgba(0,0,0,0.06); }
         .sel-btn:active { transform: scale(0.96); }
         .sel-btn.aktif {
             border-color: var(--text-primary); color: var(--text-primary);
-            background: rgba(237,237,238,0.08);
+            background: rgba(26,24,23,0.07);
         }
 
         /* Model seçici — aktif halde Packt turuncusu */
@@ -222,13 +214,6 @@
 
         #surface-layer { z-index: 1;   pointer-events: none; mix-blend-mode: multiply; opacity: 0.9; }
         #base-layer    { z-index: 100; pointer-events: none; mix-blend-mode: multiply; opacity: 0.9; }
-
-        /* iOS Safari: mix-blend-mode on <img> broken for external SVGs — show normally */
-        .ios #surface-layer  { mix-blend-mode: normal; opacity: 1; }
-        .ios #base-layer     { mix-blend-mode: normal; opacity: 1; }
-        .ios .aksesuar-layer { mix-blend-mode: normal; }
-        /* iOS'ta scene arka planı hafif koyulaştırılır, beyaz SVG filleri daha az belli olur */
-        .ios #configurator-wrapper { background: #e8e2d9; }
         #guide-layer   { z-index: 150; pointer-events: none; opacity: 0.45; display: none; }
         .aksesuar-layer {
             pointer-events: none; object-fit: contain;
@@ -339,10 +324,6 @@
         .urun-secenegi:hover { background: rgba(51,49,50,0.06); }
         .urun-secenegi:active { transform: scale(0.98); }
         .urun-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-        .urun-ikon {
-            width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;
-            border-radius: 8px; background: rgba(51,49,50,0.06); padding: 4px;
-        }
         .urun-badge {
             font-size: 10px; background: rgba(51,49,50,0.08); color: rgba(51,49,50,0.45);
             padding: 2px 6px; border-radius: 4px; margin-left: auto; font-weight: 400;
@@ -357,32 +338,32 @@
 
         /* ── TOAST BİLDİRİM ── */
         #toast {
-            position: absolute; bottom: 5%; left: 50%;
-            transform: translateX(-50%) translateY(14px);
-            background: rgba(13,12,11,0.88);
+            position: fixed; top: 44%; left: 50%;
+            transform: translateX(-50%) translateY(calc(-50% + 16px));
+            background: rgba(26,24,23,0.90);
             backdrop-filter: blur(18px) saturate(1.6);
             -webkit-backdrop-filter: blur(18px) saturate(1.6);
-            border: 1px solid rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.10);
             border-radius: 28px;
-            padding: 9px 18px 9px 13px;
-            display: flex; align-items: center; gap: 9px;
-            font-size: 12px; font-weight: 450;
-            color: var(--text-secondary);
-            pointer-events: none; z-index: 3000;
+            padding: 11px 22px 11px 16px;
+            display: flex; align-items: center; gap: 10px;
+            font-size: 13px; font-weight: 500;
+            color: #ededee;
+            pointer-events: none; z-index: 9999;
             opacity: 0; white-space: nowrap;
             max-width: calc(100vw - 48px);
-            transition: opacity 0.2s ease, transform 0.28s var(--ease-out-expo);
+            transition: opacity 0.22s ease, transform 0.30s var(--ease-out-expo);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
         }
-        #toast.gorunu { opacity: 1; transform: translateX(-50%) translateY(0); }
-        #toast-icon { font-size: 14px; flex-shrink: 0; line-height: 1; }
-        /* #toast, #configurator-wrapper aynı stacking context'te — z-index yeterli */
+        #toast.gorunu { opacity: 1; transform: translateX(-50%) translateY(-50%); }
+        #toast-icon { font-size: 15px; flex-shrink: 0; line-height: 1; }
 
         /* ── KALDIR ONAY MODALİ ── */
         #kaldir-modal {
             position: fixed; inset: 0; z-index: 4000;
-            display: flex; align-items: flex-end; justify-content: center;
-            padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
-            background: rgba(0,0,0,0.45);
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.42);
             backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
             opacity: 0; pointer-events: none;
             transition: opacity 0.22s ease;
@@ -390,14 +371,49 @@
         #kaldir-modal.acik { opacity: 1; pointer-events: all; }
         #kaldir-kart {
             background: var(--surface-2); border: 1px solid var(--border);
-            border-radius: 20px 20px 16px 16px;
-            padding: 20px 20px 16px;
-            width: 100%; max-width: 400px;
-            transform: translateY(20px);
+            border-radius: 18px;
+            padding: 22px 22px 18px;
+            width: 100%; max-width: 380px;
+            transform: translateY(10px) scale(0.97);
             transition: transform 0.28s var(--ease-out-expo);
-            margin: 0 12px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.14);
         }
-        #kaldir-modal.acik #kaldir-kart { transform: translateY(0); }
+        #kaldir-modal.acik #kaldir-kart { transform: translateY(0) scale(1); }
+
+        /* ── MODEL DEĞİŞTİR ONAY MODALİ ── */
+        #model-degistir-modal {
+            position: fixed; inset: 0; z-index: 4500;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.42);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.22s ease;
+        }
+        #model-degistir-modal.acik { opacity: 1; pointer-events: all; }
+        #model-degistir-kart {
+            background: var(--surface-2); border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 22px 22px 18px;
+            width: 100%; max-width: 380px;
+            transform: translateY(10px) scale(0.97);
+            transition: transform 0.28s var(--ease-out-expo);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.14);
+        }
+        #model-degistir-modal.acik #model-degistir-kart { transform: translateY(0) scale(1); }
+        #model-degistir-ikon {
+            font-size: 26px; margin-bottom: 10px; line-height: 1;
+        }
+        #model-degistir-baslik {
+            font-size: 14px; font-weight: 700; color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+        #model-degistir-aciklama {
+            font-size: 12px; color: var(--text-secondary);
+            margin-bottom: 20px; line-height: 1.6;
+        }
+        #model-degistir-aciklama strong { color: var(--text-primary); font-weight: 600; }
+        #model-degistir-butonlar { display: flex; gap: 8px; }
         #kaldir-urun-adi {
             font-size: 13px; font-weight: 600; color: var(--text-primary);
             margin-bottom: 4px;
@@ -462,17 +478,10 @@
 
         /* ── MOBILE RESPONSIVE ── */
         @media (max-width: 768px) {
-            body { padding: 8px 8px; }
-            #header { margin-bottom: 8px; gap: 6px; }
+            body { padding: 10px 10px; }
+            #header { margin-bottom: 8px; }
             #header-brand { font-size: 11px; }
             #header-sub { display: none; }
-            /* Küçük ekranda Nasıl Kullanılır yazısını gizle, sadece ? ikonu kalsın */
-            #help-btn span:last-child { display: none; }
-            #help-btn { padding: 7px 10px; }
-            /* Paylaş butonu kompakt */
-            #share-btn { padding: 7px 12px; font-size: 11px; }
-            /* Logo küçük ekranda biraz daha küçük */
-            #header-logo img { height: 22px !important; }
 
             /* Selektörler — 2 satırlı grid: [etiket] [butonlar] */
             #selectors {
@@ -494,7 +503,7 @@
             #selectors .selector-label-group { margin-left: 0 !important; }
 
             #right-panel { grid-template-columns: 1fr; }
-            #plan-canvas { height: 160px; }
+            #plan-canvas { height: 130px; }
 
             /* Larger tap targets for SVG hotspots in viewBox space */
             .hotspot { r: 62; touch-action: manipulation; }
@@ -524,26 +533,6 @@
             /* Onboarding — mobile */
             #onboarding    { top: 3%; left: 3%; max-width: 60%; }
 
-        }
-
-        /* ── KONFİGÜRASYON BİLGİ ETİKETİ ── */
-        #config-info {
-            position: absolute; top: 4%; left: 4%;
-            display: flex; flex-direction: column; gap: 3px;
-            pointer-events: none; z-index: 188;
-            opacity: 0;
-            transition: opacity 1.4s var(--ease-out-expo);
-        }
-        #config-info.gorunu { opacity: 1; }
-        #config-info-plato {
-            font-size: clamp(10px, 1.1vw, 15px); font-weight: 700;
-            letter-spacing: 0.06em; text-transform: uppercase;
-            color: #333132; opacity: 0.75;
-        }
-        #config-info-ayak {
-            font-size: clamp(8px, 0.8vw, 11px); font-weight: 500;
-            letter-spacing: 0.1em; text-transform: uppercase;
-            color: #333132; opacity: 0.45;
         }
 
         /* ── ALINTI OVERLAY ── */
@@ -590,7 +579,7 @@
             max-width: 42%;
             transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
         }
-#onboarding.gizli { opacity: 0; transform: translateY(-10px) translateX(-6px); }
+        #onboarding.gizli { opacity: 0; transform: translateY(-10px) translateX(-6px); }
         #onboarding-slogan {
             font-size: clamp(14px, 1.9vw, 26px);
             font-weight: 700; letter-spacing: 0.01em; line-height: 1.15;
@@ -605,9 +594,53 @@
             100% { background-position: -80% center; }
         }
         #onboarding-hint {
-            font-size: clamp(7px, 0.75vw, 10px); font-weight: 500;
-            color: #333132; opacity: 0.45;
-            letter-spacing: 0.1em; text-transform: uppercase;
+            font-size: clamp(11px, 1.15vw, 15px); font-weight: 600;
+            color: #333132; opacity: 0.70;
+            letter-spacing: 0.06em;
+        }
+
+        /* ── NODE PULSE ANİMASYONU (onboarding süresince) ── */
+        @keyframes hotspotPulse {
+            0%, 100% { fill: rgba(245,79,54,0.0);  stroke: rgba(245,79,54,0.0);  stroke-width: 2; }
+            50%       { fill: rgba(245,79,54,0.24); stroke: rgba(245,79,54,0.60); stroke-width: 4; }
+        }
+        .onboarding-aktif #node-layer .hotspot:not(.ayak-dis-node):not(.ayak-ic-node):not(.dolu) {
+            animation: hotspotPulse 1.9s ease-in-out infinite;
+        }
+        /* Alternating delay — wave efekti */
+        .onboarding-aktif #node-layer g .hotspot:nth-child(odd):not(.ayak-dis-node):not(.ayak-ic-node):not(.dolu) {
+            animation-delay: -0.95s;
+        }
+
+        /* ── PARMAK REHBERİ ── */
+        #node-hint {
+            position: absolute; top: 56%; left: 32%;
+            transform: translate(-50%, -50%);
+            pointer-events: none; z-index: 192;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            opacity: 1;
+            transition: opacity 0.45s ease, transform 0.45s var(--ease-out-expo);
+        }
+        #node-hint.gizli {
+            opacity: 0;
+            transform: translate(-50%, -62%);
+        }
+        #node-hint-hand {
+            width: clamp(44px, 5.5vw, 68px);
+            height: auto;
+            filter: drop-shadow(0 4px 14px rgba(0,0,0,0.15));
+            animation: handBounce 1.5s ease-in-out infinite;
+            transform-origin: bottom center;
+            display: block;
+        }
+        @keyframes handBounce {
+            0%, 100% { transform: translateY(0)    rotate(-8deg) scale(1.00); }
+            40%       { transform: translateY(-16px) rotate(6deg)  scale(1.06); }
+        }
+
+        @media (max-width: 768px) {
+            #node-hint { top: 50%; left: 40%; }
+            #node-hint-hand { width: 38px; }
         }
 
     </style>
@@ -642,14 +675,14 @@
 <!-- SELEKTÖRLER: Model + Ayak Pozisyonu -->
 <div id="selectors">
     <div class="selector-label-group">
-        <span class="selector-label sel-label-long">Plato Modeli</span>
-        <span class="selector-label sel-label-short">Plato</span>
-        <span class="selector-sublabel" id="plato-bilgi">55 cm · 12 nokta</span>
+        <span class="selector-label sel-label-long">Masa Modeli</span>
+        <span class="selector-label sel-label-short">Model</span>
+        <span class="selector-sublabel">boyutu seçin</span>
     </div>
     <div class="selector-group">
-        <button class="sel-btn model-btn aktif" onclick="baseSecimiYap('b01',this)" title="55 cm · 12 nokta">Plato 01</button>
-        <button class="sel-btn model-btn"       onclick="baseSecimiYap('b02',this)" title="85 cm · 18 nokta">Plato 02</button>
-        <button class="sel-btn model-btn"       onclick="baseSecimiYap('b03',this)" title="125 cm · 26 nokta">Plato 03</button>
+        <button class="sel-btn model-btn aktif" onclick="baseSecimiYap('b01',this)" title="Küçük — 6 kolon">B01</button>
+        <button class="sel-btn model-btn"       onclick="baseSecimiYap('b02',this)" title="Orta — 9 kolon">B02</button>
+        <button class="sel-btn model-btn"       onclick="baseSecimiYap('b03',this)" title="Büyük — 13 kolon">B03</button>
     </div>
 
     <div class="selector-label-group" style="margin-left:14px">
@@ -760,12 +793,6 @@
             </g>
         </svg>
 
-        <!-- KONFİGÜRASYON BİLGİ ETİKETİ — her zaman görünür -->
-        <div id="config-info">
-            <span id="config-info-plato">Plato 01 · 55 cm</span>
-            <span id="config-info-ayak">Ayak Dışta</span>
-        </div>
-
         <!-- ALINTI OVERLAY — onboarding kapandıktan sonra kalıcı olarak görünür -->
         <div id="quote-overlay">
             <span id="quote-mark">"</span>
@@ -782,6 +809,11 @@
         <div id="onboarding">
             <div id="onboarding-slogan">Kendi Packt'ini Oluştur</div>
             <div id="onboarding-hint">Bir aksesuar eklemek için masadaki noktalardan birine dokun</div>
+        </div>
+
+        <!-- PARMAK REHBERİ — node pulse başlayana dek görünür -->
+        <div id="node-hint">
+            <img id="node-hint-hand" src="parmak.svg" alt="">
         </div>
 
     </div>
@@ -832,7 +864,7 @@
             <div class="help-no">1</div>
             <div class="help-icerik">
                 <strong>Masa modelini seç</strong>
-                <span>Üstteki <em>Plato Modeli</em> seçeneğinden masanın boyutunu belirle. Plato 01 (55 cm), Plato 02 (85 cm), Plato 03 (125 cm).</span>
+                <span>Üstteki <em>Masa Modeli</em> seçeneğinden masanın boyutunu belirle. B01 küçük, B02 orta, B03 büyük masaya karşılık gelir.</span>
             </div>
         </div>
         <div class="help-adim">
@@ -874,6 +906,26 @@
         <div id="kaldir-butonlar">
             <button class="kaldir-btn" id="kaldir-iptal"  onclick="kaldirIptal()">İptal</button>
             <button class="kaldir-btn" id="kaldir-onayla" onclick="kaldirOnayla()">Kaldır</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODEL DEĞİŞTİR ONAY MODALİ -->
+<div id="model-degistir-modal" onclick="modelDegistirIptal()">
+    <div id="model-degistir-kart" onclick="event.stopPropagation()">
+        <div id="model-degistir-ikon">⚠️</div>
+        <div id="model-degistir-baslik">Aksesuarlar Silinecek</div>
+        <div id="model-degistir-aciklama">
+            Masa modelini değiştirirsen eklediğin
+            <strong id="model-degistir-adet"></strong> kaldırılacak.
+            Devam etmek istiyor musun?
+        </div>
+        <div id="model-degistir-butonlar">
+            <button class="kaldir-btn" id="model-degistir-iptal"  onclick="modelDegistirIptal()">İptal</button>
+            <button class="kaldir-btn" id="model-degistir-onayla" onclick="modelDegistirOnayla()"
+                style="background:rgba(245,79,54,0.12);color:var(--accent);border-color:rgba(245,79,54,0.28);">
+                Değiştir
+            </button>
         </div>
     </div>
 </div>
@@ -945,25 +997,25 @@ const URUN_KATALOGU = {
 
     // ── HOLDER 01: Kontrolcü Standı — tek F-node ──
     "holder01": {
-        ad: "Kontrolcü Standı", boyut: "1 F-node", ikon: "ikonlar/stant01.svg",
+        ad: "Kontrolcü Standı", boyut: "1 F-node",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["on"], renk: "#4A9EFF", triggerRow: "F", gap: 1
     },
     // ── HOLDER 02: Telefon Standı — tek F-node ──
     "holder02": {
-        ad: "Telefon Standı", boyut: "1 F-node", ikon: "ikonlar/stant02.svg",
+        ad: "Telefon Standı", boyut: "1 F-node",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["on"], renk: "#50C878", triggerRow: "F", gap: 1
     },
     // ── HOLDER 03: Tablet Standı — tek F-node ──
     "holder03": {
-        ad: "Tablet Standı", boyut: "1 F-node", ikon: "ikonlar/stant03.svg",
+        ad: "Tablet Standı", boyut: "1 F-node",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["on"], renk: "#B088FF", triggerRow: "F", gap: 1
     },
     // ── HOLDER 04: Laptop Standı · Açık — 3 ardışık F-node ──
     "holder04": {
-        ad: "Laptop Standı · Açık", boyut: "3 F-node", ikon: "ikonlar/stant04.svg",
+        ad: "Laptop Standı · Açık", boyut: "3 F-node",
         footprint: [
             { dCol: 0, dRow: "same" },
             { dCol: 1, dRow: "same" },
@@ -973,7 +1025,7 @@ const URUN_KATALOGU = {
     },
     // ── HOLDER 05: Laptop Standı · Kapalı — 3 ardışık B-node ──
     "holder05": {
-        ad: "Laptop Standı · Kapalı", boyut: "3 B-node", ikon: "ikonlar/stant05.svg",
+        ad: "Laptop Standı · Kapalı", boyut: "3 B-node",
         footprint: [
             { dCol: 0, dRow: "same" },
             { dCol: 1, dRow: "same" },
@@ -982,66 +1034,66 @@ const URUN_KATALOGU = {
         yonler: ["arka"], renk: "#FFB347", triggerRow: "B", gap: 1
     },
     "holder05-sol-kose": {
-        ad: "Laptop Standı · Kapalı Sol Köşe", boyut: "B1 + LM + F1", ikon: "ikonlar/stant05.svg",
+        ad: "Laptop Standı · Kapalı Sol Köşe", boyut: "B1 + LM + F1",
         footprint: "left-corner",
         yonler: ["sol"], renk: "#FF9A3C",
         triggerNodes: ["B1", "LM", "F1"]
     },
     "holder05-sag-kose": {
-        ad: "Laptop Standı · Kapalı Sağ Köşe", boyut: "B? + RM + F?", ikon: "ikonlar/stant05.svg",
+        ad: "Laptop Standı · Kapalı Sağ Köşe", boyut: "B? + RM + F?",
         footprint: "right-corner",
         yonler: ["sag"], renk: "#FF7A45",
         triggerNodes: ["RM"]
     },
-    // ── HOLDER 06: Kulaklık Standı — tek node ──
+    // ── HOLDER 06: Kulaklik Standı — tek node ──
     "holder06-arka": {
-        ad: "Kulaklık Standı", boyut: "1 B-node", ikon: "ikonlar/stant06.svg",
+        ad: "Kulaklik Standı", boyut: "1 B-node",
         dosyaId: "holder06",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["arka"], renk: "#FF6B6B", triggerRow: "B", gap: 1
     },
     "holder06-on": {
-        ad: "Kulaklık Standı (Köşe Ön)", boyut: "1 F-node", ikon: "ikonlar/stant06.svg",
+        ad: "Kulaklik Standı (Köşe Ön)", boyut: "1 F-node",
         dosyaId: "holder06",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["on"], renk: "#FF6B6B", triggerRow: "F", gap: 1, cornerFront: true
     },
     "holder06-sol": {
-        ad: "Kulaklık Standı Sol", boyut: "LM", ikon: "ikonlar/stant06.svg",
+        ad: "Kulaklik Standı Sol", boyut: "LM",
         dosyaId: "holder06",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["sol"], renk: "#FF6B6B",
         triggerNodes: ["LM"], ayakOrtagi: true
     },
     "holder06-sag": {
-        ad: "Kulaklık Standı Sağ", boyut: "RM", ikon: "ikonlar/stant06.svg",
+        ad: "Kulaklik Standı Sağ", boyut: "RM",
         dosyaId: "holder06",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["sag"], renk: "#FF6B6B",
         triggerNodes: ["RM"], ayakOrtagi: true
     },
-    // ── HOLDER 06 V2: Kulaklık Standı-2 ──
+    // ── HOLDER 06 V2: Kulaklik Standı-2 ──
     "holder06v2-arka": {
-        ad: "Kulaklık Standı-2", boyut: "1 B-node", ikon: "ikonlar/stant06.2.svg",
+        ad: "Kulaklik Standı-2", boyut: "1 B-node",
         dosyaId: "holder06v2",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["arka"], renk: "#FF9966", triggerRow: "B", gap: 1
     },
     "holder06v2-on": {
-        ad: "Kulaklık Standı-2 (Köşe Ön)", boyut: "1 F-node", ikon: "ikonlar/stant06.2.svg",
+        ad: "Kulaklik Standı-2 (Köşe Ön)", boyut: "1 F-node",
         dosyaId: "holder06v2",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["on"], renk: "#FF9966", triggerRow: "F", gap: 1, cornerFront: true
     },
     "holder06v2-sol": {
-        ad: "Kulaklık Standı-2 Sol", boyut: "LM", ikon: "ikonlar/stant06.2.svg",
+        ad: "Kulaklik Standı-2 Sol", boyut: "LM",
         dosyaId: "holder06v2",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["sol"], renk: "#FF9966",
         triggerNodes: ["LM"], ayakOrtagi: true
     },
     "holder06v2-sag": {
-        ad: "Kulaklık Standı-2 Sağ", boyut: "RM", ikon: "ikonlar/stant06.2.svg",
+        ad: "Kulaklik Standı-2 Sağ", boyut: "RM",
         dosyaId: "holder06v2",
         footprint: [{ dCol: 0, dRow: "same" }],
         yonler: ["sag"], renk: "#FF9966",
@@ -1049,7 +1101,7 @@ const URUN_KATALOGU = {
     },
     // ── BASE 05: Plato · Tepsi S ── 2×2 (B+F, 2 kolon)
     "base05": {
-        ad: "Plato · Tepsi S", boyut: "2 kolon (B+F)", ikon: "ikonlar/plato05.svg",
+        ad: "Plato · Tepsi S", boyut: "2 kolon (B+F)",
         footprint: [
             { dCol: 0, dRow: "B" }, { dCol: 1, dRow: "B" },
             { dCol: 0, dRow: "F" }, { dCol: 1, dRow: "F" }
@@ -1060,7 +1112,7 @@ const URUN_KATALOGU = {
     // ayakOrtagi: köşe node'ları (dCol 0 ve 4) ayaklarla çakışabilir, SVG bunu göze alır.
     // ekFootprint: dosya adında yer almaz ama ara node'lar da bloke edilir.
     "base06": {
-        ad: "Plato · Tepsi M", boyut: "5 kolon (B+F)", ikon: "ikonlar/plato06.svg",
+        ad: "Plato · Tepsi M", boyut: "5 kolon (B+F)",
         footprint: [
             { dCol: 0, dRow: "B" }, { dCol: 4, dRow: "B" },
             { dCol: 0, dRow: "F" }, { dCol: 4, dRow: "F" }
@@ -1144,10 +1196,10 @@ const MEVCUT_SVGLER = new Set([
     "b02/b02.holder06v2.B7.arka.svg","b02/b02.holder06v2.B8.arka.svg","b02/b02.holder06v2.B9.arka.svg",
     "b03/b03.holder06v2.B10.arka.svg","b03/b03.holder06v2.B11.arka.svg","b03/b03.holder06v2.B12.arka.svg","b03/b03.holder06v2.B13.arka.svg",
     // ── HOLDER 06 V2 (F-köşe + LM/RM) ────────────────────
-    "b01/b01.holder06v2.F1.on.svg","b01/b01.holder06v2.F6.on.svg",
-    "b02/b02.holder06v2.F9.on.svg","b03/b03.holder06v2.F13.on.svg",
+    "b01/b01.holder06v2.F1.on.svg","b03/b03.holder06v2.F13.on.svg",
     "b01/b01.holder06v2.LM.sol.svg",
-    "b01/b01.holder06v2.RM.sag.svg","b02/b02.holder06v2.RM.sag.svg","b03/b03.holder06v2.RM.sag.svg",
+    "b03/b03.holder06v2.RM.sag.svg",
+    // b01/b02.holder06v2.RM.sag.svg — SVG dosyaları henüz yok, eklenince buraya ekle
     // ── BASE 05 ───────────────────────────────────────────
     "b01/b01.base05.B2-B3-F2-F3.arka.svg","b01/b01.base05.B3-B4-F3-F4.arka.svg",
     "b01/b01.base05.B4-B5-F4-F5.arka.svg","b01/b01.base05.B5-B6-F5-F6.arka.svg",
@@ -1222,63 +1274,80 @@ function nodeMusaitMi(id) {
 }
 
 // ════════════════════════════════════════════════════════════
+// ONAY MODALİ — model ve ayak değişimleri için ortak
+// ════════════════════════════════════════════════════════════
+let _pendingAction = null; // { tip: 'model'|'ayak', id, btn }
+
+function _confirmAc(tip, id, btn) {
+    _pendingAction = { tip, id, btn };
+    const adet = takiliParcalar.length;
+    const nesne = tip === 'model' ? 'Masa modelini' : 'Ayak pozisyonunu';
+    document.getElementById('model-degistir-aciklama').innerHTML =
+        `${nesne} değiştirirsen eklediğin <strong>${adet} aksesuar</strong> kaldırılacak. Devam etmek istiyor musun?`;
+    document.getElementById('model-degistir-modal').classList.add('acik');
+}
+
+function modelDegistirIptal() {
+    _pendingAction = null;
+    document.getElementById('model-degistir-modal').classList.remove('acik');
+}
+
+function modelDegistirOnayla() {
+    if (!_pendingAction) return;
+    const { tip, id, btn } = _pendingAction;
+    _pendingAction = null;
+    document.getElementById('model-degistir-modal').classList.remove('acik');
+    if (tip === 'model') _baseSecimiUygula(id, btn);
+    else                 _ayakSecimiUygula(id, btn);
+}
+
+// ════════════════════════════════════════════════════════════
 // BASE SEÇİMİ
 // ════════════════════════════════════════════════════════════
-const PLATO_BILGI = { b01: '55 cm · 12 nokta', b02: '85 cm · 18 nokta', b03: '125 cm · 26 nokta' };
+function baseSecimiYap(baseId, btn) {
+    if (baseId === seciliBase) return;
+    if (takiliParcalar.length > 0) { _confirmAc('model', baseId, btn); return; }
+    _baseSecimiUygula(baseId, btn);
+}
 
-function _baseUygula(baseId, btn) {
+function _baseSecimiUygula(baseId, btn) {
     seciliBase = baseId;
     document.querySelectorAll('.sel-btn:not(.ayak-dis):not(.ayak-ic)').forEach(b => b.classList.remove('aktif'));
     btn.classList.add('aktif');
-    const bilgi = document.getElementById('plato-bilgi');
-    if (bilgi) bilgi.textContent = PLATO_BILGI[baseId] || '';
-    const platoNo = { b01:'01', b02:'02', b03:'03' }[baseId] || '';
-    const ci = document.getElementById('config-info-plato');
-    if (ci) ci.textContent = `Plato ${platoNo} · ${(PLATO_BILGI[baseId]||'').split(' · ')[0]}`;
+    // Node grupları
     ['b01','b02','b03'].forEach(id => {
         document.getElementById('nodes-' + id).style.display = id === baseId ? '' : 'none';
     });
+    // Node kılavuzu (src JS'de atanır, HTML'de boş)
     const num = baseId.slice(-1);
     document.getElementById('guide-layer').src = `BASE0${num}-NODE.svg`;
-    sifirla(); surfaceSVGyukle(); baseSVGyukle(); ayakNodelariniUygula(); ozetGuncelle(); planCiz();
-}
-
-function baseSecimiYap(baseId, btn) {
-    if (takiliParcalar.length > 0) {
-        onayGoster(
-            `${takiliParcalar.length} aksesuar silinecek`,
-            'Model değiştirince mevcut aksesuarlar kaldırılır. Devam etmek istiyor musun?',
-            () => _baseUygula(baseId, btn),
-            'Devam Et'
-        );
-        return;
-    }
-    _baseUygula(baseId, btn);
+    // Aksesuarları sıfırla, ayakları yeniden uygula
+    sifirla();
+    surfaceSVGyukle();
+    baseSVGyukle();
+    ayakNodelariniUygula();
+    ozetGuncelle();
+    planCiz();
 }
 
 // ════════════════════════════════════════════════════════════
 // AYAK SEÇİMİ
 // ════════════════════════════════════════════════════════════
-function _ayakUygula(pozisyon, btn) {
+function ayakSecimiYap(pozisyon, btn) {
+    if (pozisyon === ayakPozisyonu) return;
+    if (takiliParcalar.length > 0) { _confirmAc('ayak', pozisyon, btn); return; }
+    _ayakSecimiUygula(pozisyon, btn);
+}
+
+function _ayakSecimiUygula(pozisyon, btn) {
     ayakPozisyonu = pozisyon;
     document.querySelectorAll('.ayak-dis, .ayak-ic').forEach(b => b.classList.remove('aktif'));
     btn.classList.add('aktif');
-    const ca = document.getElementById('config-info-ayak');
-    if (ca) ca.textContent = pozisyon === 'dis' ? 'Ayak Dışta' : 'Ayak İçte';
-    sifirla(); baseSVGyukle(); ayakNodelariniUygula(); ozetGuncelle(); planCiz();
-}
-
-function ayakSecimiYap(pozisyon, btn) {
-    if (takiliParcalar.length > 0) {
-        onayGoster(
-            `${takiliParcalar.length} aksesuar silinecek`,
-            'Ayak pozisyonu değiştirince mevcut aksesuarlar kaldırılır. Devam etmek istiyor musun?',
-            () => _ayakUygula(pozisyon, btn),
-            'Devam Et'
-        );
-        return;
-    }
-    _ayakUygula(pozisyon, btn);
+    sifirla();
+    baseSVGyukle();
+    ayakNodelariniUygula();
+    ozetGuncelle();
+    planCiz();
 }
 
 // Masa yüzeyi (BASE-01.svg) — daima görünür, ayak pozisyonundan bağımsız
@@ -1346,34 +1415,20 @@ function haptic(ms = 8) {
 }
 
 // ════════════════════════════════════════════════════════════
-// KALDIR / ONAY MODALİ (genel amaçlı)
+// KALDIR MODALİ
 // ════════════════════════════════════════════════════════════
-let _kaldirHedef   = null;
-let _onayCallback  = null;
-
-function onayGoster(baslik, aciklama, onOnayla, onayBtn = 'Onayla') {
-    _onayCallback = onOnayla;
-    document.getElementById('kaldir-urun-adi').textContent  = baslik;
-    document.getElementById('kaldir-aciklama').textContent  = aciklama;
-    document.getElementById('kaldir-onayla').textContent    = onayBtn;
-    document.getElementById('kaldir-modal').classList.add('acik');
-}
+let _kaldirHedef = null;
 function kaldirModal(parca) {
     _kaldirHedef = parca;
-    onayGoster(
-        URUN_KATALOGU[parca.urunId].ad,
-        'Bu aksesuarı kaldırmak istiyor musunuz?',
-        () => { parcaKaldir(parca); _kaldirHedef = null; },
-        'Kaldır'
-    );
+    document.getElementById('kaldir-urun-adi').textContent = URUN_KATALOGU[parca.urunId].ad;
+    document.getElementById('kaldir-modal').classList.add('acik');
 }
 function kaldirIptal() {
-    _kaldirHedef = null; _onayCallback = null;
+    _kaldirHedef = null;
     document.getElementById('kaldir-modal').classList.remove('acik');
 }
 function kaldirOnayla() {
-    if (_onayCallback) _onayCallback();
-    _onayCallback = null; _kaldirHedef = null;
+    if (_kaldirHedef) { parcaKaldir(_kaldirHedef); _kaldirHedef = null; }
     document.getElementById('kaldir-modal').classList.remove('acik');
 }
 
@@ -1384,6 +1439,17 @@ let onboardingAktif = true;
 function onboardingKapat() {
     if (!onboardingAktif) return;
     onboardingAktif = false;
+
+    // Node pulse animasyonunu durdur
+    document.getElementById('configurator-wrapper').classList.remove('onboarding-aktif');
+
+    // Parmak rehberini gizle
+    const hint = document.getElementById('node-hint');
+    if (hint) {
+        hint.classList.add('gizli');
+        setTimeout(() => hint.remove(), 500);
+    }
+
     const el = document.getElementById('onboarding');
     if (!el) return;
     el.classList.add('gizli');
@@ -1391,10 +1457,8 @@ function onboardingKapat() {
         el.remove();
         // Onboarding gittikten sonra alıntı yavaşça belirir
         setTimeout(() => {
-            const q  = document.getElementById('quote-overlay');
-            const ci = document.getElementById('config-info');
-            if (q)  q.classList.add('gorunu');
-            if (ci) ci.classList.add('gorunu');
+            const q = document.getElementById('quote-overlay');
+            if (q) q.classList.add('gorunu');
         }, 120);
     }, { once: true });
 }
@@ -1577,10 +1641,7 @@ function menuAc(uygunlar, node) {
     uygunlar.forEach(urun => {
         const btn = document.createElement('button');
         btn.className = 'urun-secenegi';
-        const solEleman = urun.ikon
-            ? `<img class="urun-ikon" src="${urun.ikon}" alt="" loading="lazy">`
-            : `<span class="urun-dot" style="background:${urun.renk}"></span>`;
-        btn.innerHTML = `${solEleman}
+        btn.innerHTML = `<span class="urun-dot" style="background:${urun.renk}"></span>
                          <span>${urun.ad}</span>
                          <span class="urun-badge">${urun.boyut}</span>`;
         btn.onclick = () => { parcaEkle(urun); menuKapat(); };
@@ -1706,12 +1767,10 @@ function parcaKaldir(kayit) {
 
 function hepsiniTemizle() {
     if (!takiliParcalar.length) return;
-    onayGoster(
-        `${takiliParcalar.length} aksesuar kaldırılacak`,
-        'Tüm aksesuarlar silinecek. Emin misin?',
-        () => { sifirla(); ayakNodelariniUygula(); ozetGuncelle(); planCiz(); },
-        'Tümünü Kaldır'
-    );
+    sifirla();
+    ayakNodelariniUygula();
+    ozetGuncelle();
+    planCiz();
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1767,15 +1826,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') helpKapat();
 // ════════════════════════════════════════════════════════════
 function planCiz() {
     const canvas = document.getElementById('plan-canvas');
-    if (!canvas) return;
-
-    // Canvas henüz layout'a yerleşmemişse RAF ile yeniden dene
-    if (canvas.clientWidth === 0) {
-        requestAnimationFrame(planCiz);
-        return;
-    }
-
-    const ctx = canvas.getContext('2d');
+    const ctx    = canvas.getContext('2d');
 
     // DPR-aware: canvas piksel sayısını CSS boyutu × ekran yoğunluğuna eşitle
     const dpr  = window.devicePixelRatio || 1;
@@ -1791,7 +1842,7 @@ function planCiz() {
 
     const W = cssW, H = cssH;
     ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#0a0a0a';
+    ctx.fillStyle = '#e6e4e0';
     ctx.fillRect(0, 0, W, H);
 
     const mc      = maxCol();
@@ -1799,13 +1850,10 @@ function planCiz() {
     const labelH  = 14;
 
     // Slot genişliği: LM + mc×col + RM → toplam (mc+2) slot
-    const slotW  = (W - 2 * pad) / (mc + 2);
-    // cellH: B ve F satırları canvas yüksekliğine sığacak şekilde kısıtlanır
-    // Toplam dikey alan: labelH + pad + cellH + 2.4*cellH + cellH + pad = 2*pad + labelH + 4.4*cellH
-    const cellH  = Math.min(slotW, (H - 2 * pad - labelH) / 4.4);
-    const cell   = cellH;             // genişlik hesaplamalarında cellH kullanılır
-    const offX   = pad + slotW;       // B/F ızgarası buradan başlar
-    const offY   = pad + labelH;      // üst etiketten sonra
+    const slotW = (W - 2 * pad) / (mc + 2);
+    const cell  = slotW;   // kare hücreler
+    const offX  = pad + slotW;        // B/F ızgarası buradan başlar
+    const offY  = pad + labelH;       // üst etiketten sonra
 
     // LM / RM merkez X
     const lmCx  = pad + slotW * 0.5;
@@ -1823,30 +1871,30 @@ function planCiz() {
     [['B', 0], ['F', 2.4]].forEach(([row, ri]) => {
         for (let col = 1; col <= mc; col++) {
             const id = row + col;
-            const px = offX + (col - 1) * slotW;   // yatayda slotW kullan
-            const py = offY + ri * cellH;            // dikeyde cellH kullan
+            const px = offX + (col - 1) * cell;
+            const py = offY + ri * cell;
             const isAyak = ayaklar.has(id);
             const isDolu = doluMap[id];
 
             ctx.beginPath();
-            ctx.roundRect(px + 1.5, py + 1.5, slotW - 3, cellH - 3, 3);
-            ctx.fillStyle   = isAyak ? ayakRenk + '14' : isDolu ? isDolu + '30' : '#1c1c1c';
-            ctx.strokeStyle = isAyak ? ayakRenk + '50' : isDolu ? isDolu + '90' : '#2c2c2c';
-            ctx.lineWidth   = 1;
+            ctx.roundRect(px + 1.5, py + 1.5, cell - 3, cell - 3, 3);
+            ctx.fillStyle   = isAyak ? ayakRenk + '22' : isDolu ? isDolu + '35' : '#d4d0cb';
+            ctx.strokeStyle = isAyak ? ayakRenk + '70' : isDolu ? isDolu + 'cc' : '#b8b3ac';
+            ctx.lineWidth   = isAyak ? 1 : 1;
             ctx.fill(); ctx.stroke();
 
             if (isDolu && !isAyak) {
                 ctx.beginPath();
-                ctx.arc(px + slotW/2, py + cellH/2, Math.min(slotW,cellH) * 0.2, 0, Math.PI * 2);
+                ctx.arc(px + cell/2, py + cell/2, cell * 0.2, 0, Math.PI * 2);
                 ctx.fillStyle = isDolu;
                 ctx.fill();
             }
 
             const lbl = isAyak ? 'A' : id;
-            ctx.fillStyle = isAyak ? ayakRenk + 'aa' : isDolu ? '#ffffff66' : '#4a4a48';
-            ctx.font = `${isAyak ? 'bold ' : ''}${Math.max(6, Math.floor(Math.min(slotW,cellH) * 0.28))}px Inter,sans-serif`;
+            ctx.fillStyle = isAyak ? ayakRenk : isDolu ? '#1a1817bb' : '#7a7570';
+            ctx.font = `${isAyak ? 'bold ' : ''}${Math.max(6, Math.floor(cell * 0.28))}px Inter,sans-serif`;
             ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(lbl, px + slotW/2, py + cellH/2);
+            ctx.fillText(lbl, px + cell/2, py + cell/2);
         }
     });
 
@@ -1857,19 +1905,19 @@ function planCiz() {
         const isDolu = doluMap[id];
         ctx.beginPath();
         ctx.arc(cx, midCy, sideR, 0, Math.PI * 2);
-        ctx.fillStyle   = isAyak ? ayakRenk + '14' : isDolu ? isDolu + '30' : '#1e1e1e';
-        ctx.strokeStyle = isAyak ? ayakRenk + '60' : isDolu ? isDolu       : '#2e2e2e';
+        ctx.fillStyle   = isAyak ? ayakRenk + '22' : isDolu ? isDolu + '35' : '#d4d0cb';
+        ctx.strokeStyle = isAyak ? ayakRenk + '70' : isDolu ? isDolu       : '#b8b3ac';
         ctx.lineWidth   = 1;
         ctx.fill(); ctx.stroke();
         const lbl = isAyak ? 'A' : id;
-        ctx.fillStyle = isAyak ? ayakRenk + 'aa' : '#5a5a58';
+        ctx.fillStyle = isAyak ? ayakRenk : '#7a7570';
         ctx.font = `${isAyak ? 'bold ' : ''}${Math.max(6, Math.floor(slotW * 0.28))}px Inter,sans-serif`;
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText(lbl, cx, midCy);
     });
 
     // Etiketler
-    ctx.fillStyle = '#5a5a58'; ctx.font = '8px Inter,sans-serif';
+    ctx.fillStyle = '#8a857f'; ctx.font = '8px Inter,sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';    ctx.fillText('B arka', offX, 2);
     ctx.textBaseline = 'bottom'; ctx.fillText('F ön',   offX, H - 2);
@@ -1880,134 +1928,25 @@ function planCiz() {
 // ════════════════════════════════════════════════════════════
 const _isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-// iOS Safari tespiti: mix-blend-mode on img çalışmıyor, CSS fallback için .ios class'ı ekle
-const _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-               (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-if (_isIOS) document.documentElement.classList.add('ios');
-
-// iOS için Canvas 2D API ile konfigüratör sahnesi çizimi.
-// CSS mix-blend-mode img'de çalışmaz ama canvas globalCompositeOperation çalışır.
-async function iosKonfiguratorYakala() {
-    const wrapper = document.getElementById('configurator-wrapper');
-    const rect    = wrapper.getBoundingClientRect();
-    const scale   = Math.min(window.devicePixelRatio || 1, 2);
-    const W = rect.width, H = rect.height;
-
-    const canvas  = document.createElement('canvas');
-    canvas.width  = Math.round(W * scale);
-    canvas.height = Math.round(H * scale);
-    const ctx = canvas.getContext('2d');
-    ctx.scale(scale, scale);
-
-    // Arka plan
-    ctx.fillStyle = '#f0ebe3';
-    ctx.fillRect(0, 0, W, H);
-
-    // Tüm görsel katmanları z-index sırasına göre topla
-    const katmanlar = [
-        { el: document.getElementById('surface-layer'), blend: 'multiply', alpha: 0.9 },
-        ...Array.from(wrapper.querySelectorAll('.aksesuar-layer'))
-               .map(el => ({ el, blend: 'source-over', alpha: 1, z: parseInt(el.style.zIndex)||0 }))
-               .filter(k => k.z < 100)
-               .sort((a, b) => a.z - b.z),
-        { el: document.getElementById('base-layer'), blend: 'multiply', alpha: 0.9 },
-        ...Array.from(wrapper.querySelectorAll('.aksesuar-layer'))
-               .map(el => ({ el, blend: 'source-over', alpha: 1, z: parseInt(el.style.zIndex)||0 }))
-               .filter(k => k.z >= 100)
-               .sort((a, b) => a.z - b.z),
-    ];
-
-    for (const { el, blend, alpha } of katmanlar) {
-        if (!el || el.style.display === 'none') continue;
-        // Yüklü değilse bekle
-        if (!el.complete) {
-            await new Promise(r => { el.onload = r; el.onerror = r; });
-        }
-        if (!el.naturalWidth) continue; // boş/hatalı img atla
-        try {
-            ctx.globalCompositeOperation = blend;
-            ctx.globalAlpha = alpha;
-            ctx.drawImage(el, 0, 0, W, H);
-        } catch(_) {}
-    }
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.globalAlpha = 1;
-    return canvas;
-}
-
 async function shareDesign() {
+    if (typeof html2canvas === 'undefined') {
+        toastGoster('Ekran aracı henüz yüklenmedi, tekrar dene', '⚠️', 3000);
+        return;
+    }
+
     const btn = document.getElementById('share-btn');
     btn.classList.add('yukleniyor');
     btn.innerHTML = '<span style="font-size:11px">Hazırlanıyor…</span>';
 
-    // ── iOS: Canvas 2D API ile manuel render (multiply composite destekleniyor) ──
-    if (_isIOS) {
-        try {
-            const canvas = await iosKonfiguratorYakala();
-            const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-            const file = new File([blob], 'packt-design.png', { type: 'image/png' });
-            if (navigator.share && navigator.canShare?.({ files: [file] })) {
-                await navigator.share({
-                    title: 'Packt Masa Tasarımım',
-                    text: 'Packt Configurator ile oluşturduğum masa tasarımı → thepackt.co',
-                    files: [file],
-                });
-            } else if (navigator.share) {
-                await navigator.share({ title: 'Packt Masa Tasarımım', url: window.location.href });
-            } else {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url; a.download = 'packt-design.png';
-                document.body.appendChild(a); a.click();
-                document.body.removeChild(a); URL.revokeObjectURL(url);
-                toastGoster('Tasarım indirildi ↓', '✓', 2500);
-            }
-        } catch(e) {
-            if (e.name !== 'AbortError') toastGoster('Bir sorun oluştu, tekrar dene', '⚠️', 3000);
-        } finally {
-            btn.classList.remove('yukleniyor');
-            btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Paylaş`;
-        }
-        return;
-    }
-
-    // ── Android & Masaüstü: yüksek kalite konfigüratör görüntüsü ──
-    if (typeof html2canvas === 'undefined') {
-        toastGoster('Ekran aracı henüz yüklenmedi, tekrar dene', '⚠️', 3000);
-        btn.classList.remove('yukleniyor');
-        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Paylaş`;
-        return;
-    }
-
     try {
-        const captureEl = document.getElementById('configurator-wrapper');
-
-        // Resimlerin yüklenmesini bekle
-        const imgs = [...captureEl.querySelectorAll('img')];
-        await Promise.all(imgs.map(img =>
-            img.complete ? Promise.resolve()
-                         : new Promise(r => { img.onload = r; img.onerror = r; })
-        ));
-
-        // mix-blend-mode geçici kaldır (html2canvas bunu boş render eder)
-        const blendEls = captureEl.querySelectorAll('#surface-layer, #base-layer, .aksesuar-layer');
-        blendEls.forEach(el => { el.style.mixBlendMode = 'normal'; el.style.opacity = '1'; });
-        const hideEls = captureEl.querySelectorAll('#toast, #onboarding, #node-layer, #guide-layer');
-        hideEls.forEach(el => el.style.visibility = 'hidden');
-
+        const captureEl = document.getElementById('main-layout');
         const canvas = await html2canvas(captureEl, {
-            backgroundColor: '#f0ebe3',
-            scale: Math.min(window.devicePixelRatio || 1, 2),
+            backgroundColor: '#ededee',
+            scale: 2,
             useCORS: true,
-            allowTaint: true,
             logging: false,
-            width: captureEl.offsetWidth,
-            height: captureEl.offsetHeight,
             ignoreElements: el => el.id === 'guide-layer' || el.id === 'node-layer',
         });
-
-        blendEls.forEach(el => { el.style.mixBlendMode = ''; el.style.opacity = ''; });
-        hideEls.forEach(el => { el.style.visibility = ''; });
 
         const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
         const file = new File([blob], 'packt-design.png', { type: 'image/png' });
@@ -2048,6 +1987,7 @@ async function shareDesign() {
 // ════════════════════════════════════════════════════════════
 // BAŞLANGIÇ
 // ════════════════════════════════════════════════════════════
+document.getElementById('configurator-wrapper').classList.add('onboarding-aktif');
 surfaceSVGyukle();
 baseSVGyukle();
 ayakNodelariniUygula();
