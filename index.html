@@ -503,7 +503,7 @@
             #selectors .selector-label-group { margin-left: 0 !important; }
 
             #right-panel { grid-template-columns: 1fr; }
-            #plan-canvas { height: 130px; }
+            #plan-panel  { display: none; }
 
             /* Larger tap targets for SVG hotspots in viewBox space */
             .hotspot { r: 62; touch-action: manipulation; }
@@ -831,7 +831,7 @@
 
     <!-- SAĞ PANEL -->
     <div id="right-panel">
-        <div class="panel-card">
+        <div class="panel-card" id="plan-panel">
             <div class="panel-card-header">
                 <span>2D Plan</span>
                 <span id="ayak-durum-label" style="font-size:9px;color:var(--text-muted)"></span>
