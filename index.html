@@ -508,25 +508,6 @@
             /* Larger tap targets for SVG hotspots in viewBox space */
             .hotspot { r: 62; touch-action: manipulation; }
 
-            /* Seçim menüsü — mobilde tam ortada */
-            #selection-menu {
-                position: fixed !important;
-                left: 50% !important; top: 50% !important;
-                right: auto !important; bottom: auto !important;
-                width: calc(100% - 40px) !important; max-width: 340px !important;
-                min-width: unset !important;
-                border-radius: 16px !important;
-                padding: 16px 16px 20px !important;
-                opacity: 0 !important;
-                transform: translate(-50%, -50%) scale(0.94) !important;
-                transition: opacity 0.22s ease,
-                            transform 0.24s var(--ease-out-expo) !important;
-                max-height: 80vh; overflow-y: auto;
-            }
-            #selection-menu.acik {
-                opacity: 1 !important;
-                transform: translate(-50%, -50%) scale(1) !important;
-            }
             .bs-handle { display: none; }
 
             /* Alıntı — mobile */
@@ -601,6 +582,26 @@
             font-size: clamp(11px, 1.15vw, 15px); font-weight: 600;
             color: #333132; opacity: 0.70;
             letter-spacing: 0.06em;
+        }
+
+        /* ── KONFİGÜRASYON BİLGİ ETİKETİ ── */
+        #config-info {
+            position: absolute; top: 4%; left: 4%;
+            display: flex; flex-direction: column; gap: 3px;
+            pointer-events: none; z-index: 188;
+            opacity: 0;
+            transition: opacity 1.4s var(--ease-out-expo);
+        }
+        #config-info.gorunu { opacity: 1; }
+        #config-info-plato {
+            font-size: clamp(10px, 1.1vw, 15px); font-weight: 700;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            color: #333132; opacity: 0.75;
+        }
+        #config-info-ayak {
+            font-size: clamp(8px, 0.8vw, 11px); font-weight: 500;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: #333132; opacity: 0.45;
         }
 
         /* ── NODE PULSE ANİMASYONU (onboarding süresince) ── */
@@ -679,14 +680,14 @@
 <!-- SELEKTÖRLER: Model + Ayak Pozisyonu -->
 <div id="selectors">
     <div class="selector-label-group">
-        <span class="selector-label sel-label-long">Masa Modeli</span>
-        <span class="selector-label sel-label-short">Model</span>
-        <span class="selector-sublabel">boyutu seçin</span>
+        <span class="selector-label sel-label-long">Plato Modeli</span>
+        <span class="selector-label sel-label-short">Plato</span>
+        <span class="selector-sublabel" id="plato-bilgi">55 cm · 12 nokta</span>
     </div>
     <div class="selector-group">
-        <button class="sel-btn model-btn aktif" onclick="baseSecimiYap('b01',this)" title="Küçük — 6 kolon">B01</button>
-        <button class="sel-btn model-btn"       onclick="baseSecimiYap('b02',this)" title="Orta — 9 kolon">B02</button>
-        <button class="sel-btn model-btn"       onclick="baseSecimiYap('b03',this)" title="Büyük — 13 kolon">B03</button>
+        <button class="sel-btn model-btn aktif" onclick="baseSecimiYap('b01',this)" title="55 cm · 12 nokta">Plato 01</button>
+        <button class="sel-btn model-btn"       onclick="baseSecimiYap('b02',this)" title="85 cm · 18 nokta">Plato 02</button>
+        <button class="sel-btn model-btn"       onclick="baseSecimiYap('b03',this)" title="125 cm · 26 nokta">Plato 03</button>
     </div>
 
     <div class="selector-label-group" style="margin-left:14px">
@@ -797,6 +798,12 @@
             </g>
         </svg>
 
+        <!-- KONFİGÜRASYON BİLGİ ETİKETİ — model/ayak değişince güncellenir -->
+        <div id="config-info">
+            <span id="config-info-plato">Plato 01 · 55 cm</span>
+            <span id="config-info-ayak">Ayak Dışta</span>
+        </div>
+
         <!-- ALINTI OVERLAY — onboarding kapandıktan sonra kalıcı olarak görünür -->
         <div id="quote-overlay">
             <span id="quote-mark">"</span>
@@ -868,7 +875,7 @@
             <div class="help-no">1</div>
             <div class="help-icerik">
                 <strong>Masa modelini seç</strong>
-                <span>Üstteki <em>Masa Modeli</em> seçeneğinden masanın boyutunu belirle. B01 küçük, B02 orta, B03 büyük masaya karşılık gelir.</span>
+                <span>Üstteki <em>Plato Modeli</em> seçeneğinden masanın boyutunu belirle. Plato 01 (55 cm), Plato 02 (85 cm), Plato 03 (125 cm).</span>
             </div>
         </div>
         <div class="help-adim">
@@ -937,6 +944,15 @@
 
 <script>
 // ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+// PLATO BİLGİSİ
+// ════════════════════════════════════════════════════════════
+const PLATO_BILGI = {
+    b01: { label: '55 cm · 12 nokta', plato: 'Plato 01', boyut: '55 cm' },
+    b02: { label: '85 cm · 18 nokta', plato: 'Plato 02', boyut: '85 cm' },
+    b03: { label: '125 cm · 26 nokta', plato: 'Plato 03', boyut: '125 cm' },
+};
+
 // ════════════════════════════════════════════════════════════
 // YÜZEY HARİTASI — daima görünür masa yüzeyi
 // ════════════════════════════════════════════════════════════
@@ -1318,6 +1334,11 @@ function _baseSecimiUygula(baseId, btn) {
     seciliBase = baseId;
     document.querySelectorAll('.sel-btn:not(.ayak-dis):not(.ayak-ic)').forEach(b => b.classList.remove('aktif'));
     btn.classList.add('aktif');
+    const pb = PLATO_BILGI[baseId];
+    const bilgiEl = document.getElementById('plato-bilgi');
+    if (bilgiEl) bilgiEl.textContent = pb.label;
+    const cpEl = document.getElementById('config-info-plato');
+    if (cpEl) cpEl.textContent = pb.plato + ' · ' + pb.boyut;
     // Node grupları
     ['b01','b02','b03'].forEach(id => {
         document.getElementById('nodes-' + id).style.display = id === baseId ? '' : 'none';
@@ -1347,6 +1368,8 @@ function _ayakSecimiUygula(pozisyon, btn) {
     ayakPozisyonu = pozisyon;
     document.querySelectorAll('.ayak-dis, .ayak-ic').forEach(b => b.classList.remove('aktif'));
     btn.classList.add('aktif');
+    const caEl = document.getElementById('config-info-ayak');
+    if (caEl) caEl.textContent = pozisyon === 'dis' ? 'Ayak Dışta' : 'Ayak İçte';
     sifirla();
     baseSVGyukle();
     ayakNodelariniUygula();
@@ -1459,10 +1482,12 @@ function onboardingKapat() {
     el.classList.add('gizli');
     el.addEventListener('transitionend', () => {
         el.remove();
-        // Onboarding gittikten sonra alıntı yavaşça belirir
+        // Onboarding gittikten sonra alıntı ve config-info yavaşça belirir
         setTimeout(() => {
-            const q = document.getElementById('quote-overlay');
-            if (q) q.classList.add('gorunu');
+            const q  = document.getElementById('quote-overlay');
+            const ci = document.getElementById('config-info');
+            if (q)  q.classList.add('gorunu');
+            if (ci) ci.classList.add('gorunu');
         }, 120);
     }, { once: true });
 }
@@ -1634,8 +1659,10 @@ function hangiUrunlerUyar(nodeId, izinliYonler) {
 }
 
 // ════════════════════════════════════════════════════════════
-// MENÜ  — desktop: tooltip konumu | mobile: bottom sheet
+// MENÜ  — desktop: tooltip konumu | mobile: ekran ortası
 // ════════════════════════════════════════════════════════════
+let _menuMobile = false;
+
 function menuAc(uygunlar, node) {
     const menu     = document.getElementById('selection-menu');
     const liste    = document.getElementById('secenekler-listesi');
@@ -1653,12 +1680,32 @@ function menuAc(uygunlar, node) {
     });
 
     if (window.innerWidth <= 768) {
-        // Bottom sheet: clear inline position overrides, let CSS take over
-        menu.style.removeProperty('left');
-        menu.style.removeProperty('top');
-        menu.style.display = 'block';
+        // Mobil: ekran ortasında modal — inline stil ile CSS'den bağımsız
+        _menuMobile = true;
+        Object.assign(menu.style, {
+            position:     'fixed',
+            left:         '50%',
+            top:          '50%',
+            right:        'auto',
+            bottom:       'auto',
+            width:        'calc(100% - 40px)',
+            maxWidth:     '340px',
+            minWidth:     'unset',
+            borderRadius: '16px',
+            padding:      '16px 16px 20px',
+            maxHeight:    '80vh',
+            overflowY:    'auto',
+            transform:    'translate(-50%, -50%) scale(0.92)',
+            opacity:      '0',
+            transition:   'opacity 0.22s ease, transform 0.24s cubic-bezier(0.16,1,0.3,1)',
+            display:      'block',
+            pointerEvents:'auto',
+        });
         backdrop.classList.add('aktif');
-        requestAnimationFrame(() => menu.classList.add('acik'));
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            menu.style.opacity   = '1';
+            menu.style.transform = 'translate(-50%, -50%) scale(1)';
+        }));
     } else {
         menu.classList.remove('acik');
         const svgEl = node.closest('svg');
@@ -1677,10 +1724,17 @@ function menuAc(uygunlar, node) {
 function menuKapat() {
     const menu     = document.getElementById('selection-menu');
     const backdrop = document.getElementById('menu-backdrop');
-    menu.classList.remove('acik');
     backdrop.classList.remove('aktif');
-    setTimeout(() => { if (!menu.classList.contains('acik')) menu.style.display = 'none'; }, 340);
     aktifNode = null;
+    if (_menuMobile) {
+        _menuMobile = false;
+        menu.style.opacity   = '0';
+        menu.style.transform = 'translate(-50%, -50%) scale(0.92)';
+        setTimeout(() => { menu.style.cssText = ''; }, 240);
+    } else {
+        menu.classList.remove('acik');
+        setTimeout(() => { if (!menu.classList.contains('acik')) menu.style.display = 'none'; }, 340);
+    }
 }
 
 document.addEventListener('click', e => {
@@ -1997,6 +2051,14 @@ baseSVGyukle();
 ayakNodelariniUygula();
 ozetGuncelle();
 planCiz();
+// Başlangıç plato bilgisi (b01)
+(function() {
+    const pb = PLATO_BILGI['b01'];
+    const bilgiEl = document.getElementById('plato-bilgi');
+    if (bilgiEl) bilgiEl.textContent = pb.label;
+    const cpEl = document.getElementById('config-info-plato');
+    if (cpEl) cpEl.textContent = pb.plato + ' · ' + pb.boyut;
+})();
 </script>
 </body>
 </html>
