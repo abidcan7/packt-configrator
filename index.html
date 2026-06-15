@@ -682,11 +682,11 @@
     <div class="selector-label-group">
         <span class="selector-label sel-label-long">Plato Modeli</span>
         <span class="selector-label sel-label-short">Plato</span>
-        <span class="selector-sublabel" id="plato-bilgi">55 cm · 12 nokta</span>
+        <span class="selector-sublabel" id="plato-bilgi">85 cm · 18 nokta</span>
     </div>
     <div class="selector-group">
-        <button class="sel-btn model-btn aktif" onclick="baseSecimiYap('b01',this)" title="55 cm · 12 nokta">Plato 01</button>
-        <button class="sel-btn model-btn"       onclick="baseSecimiYap('b02',this)" title="85 cm · 18 nokta">Plato 02</button>
+        <button class="sel-btn model-btn"       onclick="baseSecimiYap('b01',this)" title="55 cm · 12 nokta">Plato 01</button>
+        <button class="sel-btn model-btn aktif" onclick="baseSecimiYap('b02',this)" title="85 cm · 18 nokta">Plato 02</button>
         <button class="sel-btn model-btn"       onclick="baseSecimiYap('b03',this)" title="125 cm · 26 nokta">Plato 03</button>
     </div>
 
@@ -696,8 +696,8 @@
         <span class="selector-sublabel">yerleşim seçin</span>
     </div>
     <div class="selector-group">
-        <button class="sel-btn ayak-dis aktif" onclick="ayakSecimiYap('dis',this)">Dışta</button>
-        <button class="sel-btn ayak-ic"        onclick="ayakSecimiYap('ic',this)">İçte</button>
+        <button class="sel-btn ayak-dis"        onclick="ayakSecimiYap('dis',this)">Dışta</button>
+        <button class="sel-btn ayak-ic  aktif" onclick="ayakSecimiYap('ic',this)">İçte</button>
     </div>
 </div>
 
@@ -724,7 +724,7 @@
         <svg id="node-layer" class="layer" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
 
             <!-- ══ BASE 01 ══  B1-B6  F1-F6  LM  RM -->
-            <g id="nodes-b01">
+            <g id="nodes-b01" style="display:none">
                 <circle class="hotspot" cx="147"  cy="689" r="38" data-id="B1" data-row="B" data-col="1" data-z="6"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
                 <circle class="hotspot" cx="271"  cy="653" r="38" data-id="B2" data-row="B" data-col="2" data-z="5"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
                 <circle class="hotspot" cx="395"  cy="617" r="38" data-id="B3" data-row="B" data-col="3" data-z="4"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
@@ -742,7 +742,7 @@
             </g>
 
             <!-- ══ BASE 02 ══  B1-B9  F1-F9  LM  RM02 -->
-            <g id="nodes-b02" style="display:none">
+            <g id="nodes-b02">
                 <circle class="hotspot" cx="147"  cy="689" r="38" data-id="B1" data-row="B" data-col="1" data-z="9"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
                 <circle class="hotspot" cx="271"  cy="653" r="38" data-id="B2" data-row="B" data-col="2" data-z="8"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
                 <circle class="hotspot" cx="395"  cy="617" r="38" data-id="B3" data-row="B" data-col="3" data-z="7"  data-yonler="on,sol,sag,arka" onclick="nodeaTikla(this)"/>
@@ -800,8 +800,8 @@
 
         <!-- KONFİGÜRASYON BİLGİ ETİKETİ — model/ayak değişince güncellenir -->
         <div id="config-info">
-            <span id="config-info-plato">Plato 01 · 55 cm</span>
-            <span id="config-info-ayak">Ayak Dışta</span>
+            <span id="config-info-plato">Plato 02 · 85 cm</span>
+            <span id="config-info-ayak">Ayak İçte</span>
         </div>
 
         <!-- ALINTI OVERLAY — onboarding kapandıktan sonra kalıcı olarak görünür -->
@@ -1150,8 +1150,8 @@ const URUN_KATALOGU = {
 // ════════════════════════════════════════════════════════════
 // DURUM (STATE)
 // ════════════════════════════════════════════════════════════
-let seciliBase    = "b01";
-let ayakPozisyonu = "dis";   // "dis" | "ic"
+let seciliBase    = "b02";
+let ayakPozisyonu = "ic";   // "dis" | "ic"
 let aktifNode     = null;
 let takiliParcalar = [];
 
@@ -2053,13 +2053,15 @@ baseSVGyukle();
 ayakNodelariniUygula();
 ozetGuncelle();
 planCiz();
-// Başlangıç plato bilgisi (b01)
+// Başlangıç plato bilgisi (b02, ayak ic)
 (function() {
-    const pb = PLATO_BILGI['b01'];
+    const pb = PLATO_BILGI['b02'];
     const bilgiEl = document.getElementById('plato-bilgi');
     if (bilgiEl) bilgiEl.textContent = pb.label;
     const cpEl = document.getElementById('config-info-plato');
     if (cpEl) cpEl.textContent = pb.plato + ' · ' + pb.boyut;
+    const caEl = document.getElementById('config-info-ayak');
+    if (caEl) caEl.textContent = 'Ayak İçte';
 })();
 </script>
 </body>
