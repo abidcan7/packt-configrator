@@ -1705,6 +1705,7 @@ function menuAc(uygunlar, node) {
         requestAnimationFrame(() => requestAnimationFrame(() => {
             menu.style.opacity   = '1';
             menu.style.transform = 'translate(-50%, -50%) scale(1)';
+            menu.classList.add('acik');
         }));
     } else {
         menu.classList.remove('acik');
@@ -1728,6 +1729,7 @@ function menuKapat() {
     aktifNode = null;
     if (_menuMobile) {
         _menuMobile = false;
+        menu.classList.remove('acik');
         menu.style.opacity   = '0';
         menu.style.transform = 'translate(-50%, -50%) scale(0.92)';
         setTimeout(() => { menu.style.cssText = ''; }, 240);
